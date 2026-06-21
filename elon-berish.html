@@ -351,8 +351,13 @@ async function elonYuborish() {
             await fetch(`/api/rasm/${savedElon.id}`, { method: 'POST', body: formData });
         }
 
+        // E'lon uchun +20 coin
+        const coinKey = 'coin_' + joriy?.email;
+        const joriy_coin = parseInt(localStorage.getItem(coinKey) || '0');
+        localStorage.setItem(coinKey, joriy_coin + 20);
+
         msg.className='message success';
-        msg.textContent='✅ E\'lon muvaffaqiyatli joylashtirildi!';
+        msg.textContent='✅ E\'lon joylashtirildi! +20 coin olindi 🪙';
         setTimeout(() => window.location.href = 'kabinet.html', 2000);
     } catch(err) {
         msg.className='message error';

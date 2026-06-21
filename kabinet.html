@@ -240,6 +240,11 @@ document.getElementById('avatar').textContent = joriy?.ism?.charAt(0)?.toUpperCa
 
 function coinOl() { return parseInt(localStorage.getItem('coin_' + joriy?.email) || '0'); }
 function coinSet(n) { localStorage.setItem('coin_' + joriy?.email, n); document.getElementById('coin-miqdor').textContent = n; }
+
+// Sahifa ochilganda coin yangilansin
+document.addEventListener('DOMContentLoaded', () => {
+    coinSet(coinOl());
+});
 coinSet(coinOl());
 
 function kunlikBonus() {

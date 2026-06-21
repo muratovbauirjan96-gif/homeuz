@@ -133,3 +133,8 @@ body.dark footer { background: #0a0a14; }
     .lightbox-prev { left: 8px; }
     .lightbox-next { right: 8px; }
 }
+/* BURGER MENU */
+.burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; margin-left: 12px; }
+.burger span { width: 24px; height: 2px; background: #1565c0; border-radius: 2px; transition: all .3s; display: block; }
+body.dark .burger span { background: #fff; }
+.close-btn { display: none; position: fixed; top: 20px; right: 20px; z-index: 1000; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; }
