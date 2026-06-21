@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — HomeUZ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #e0e0e0; }
+
+        /* LOGIN */
+        .admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: #1a1a2e; border-radius: 20px; padding: 48px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); text-align: center; }
+        .login-box h1 { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .login-box p { color: #888; margin-bottom: 32px; font-size: 14px; }
+        .login-box input { width: 100%; background: #252540; border: 1.5px solid #333; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #e0e0e0; outline: none; margin-bottom: 12px; }
+        .login-box input:focus { border-color: #1565c0; }
+        .login-box button { width: 100%; background: #1565c0; color: #fff; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+        .login-box button:hover { background: #0d47a1; }
+        .login-error { color: #e53935; font-size: 13px; margin-top: 12px; display: none; }
+
+        /* PANEL */
+        .admin-panel { display: none; }
+        .sidebar { position: fixed; left: 0; top: 0; width: 240px; height: 100vh; background: #1a1a2e; padding: 24px; border-right: 1px solid #333; }
+        .sidebar-logo { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 32px; }
+        .sidebar-logo span { color: #f57c00; }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin-bottom: 4px; }
+        .sidebar-menu a { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: #aaa; text-decoration: none; font-size: 14px; font-weight: 500; transition: all .2s; }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background: #252540; color: #fff; }
+        .sidebar-footer { position: absolute; bottom: 24px; left: 24px; right: 24px; }
+        .btn-exit { width: 100%; background: #fce4ec; color: #c62828; border: none; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+        .main-content { margin-left: 240px; padding: 32px; }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+        .stat-card { background: #1a1a2e; border-radius: 16px; padding: 24px; border: 1px solid #333; }
+        .stat-card .icon { font-size: 32px; margin-bottom: 12px; }
+        .stat-card .value { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+        .stat-card .label { font-size: 13px; color: #888; }
+
+        /* TABLE */
+        .table-card { background: #1a1a2e; border-radius: 16px; padding: 24px; border: 1px solid #333; }
+        .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .table-header h2 { font-size: 18px; font-weight: 700; }
+        .search-input { background: #252540; border: 1.5px solid #333; border-radius: 10px; padding: 8px 14px; color: #e0e0e0; font-size: 14px; outline: none; width: 250px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 16px; font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #333; }
+        td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #252540; vertical-align: middle; }
+        tr:hover td { background: #252540; }
+        .td-img { width: 48px; height: 36px; border-radius: 6px; object-fit: cover; background: #252540; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .td-img img { width: 48px; height: 36px; border-radius: 6px; object-fit: cover; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .status-active { background: #1a2e1a; color: #4caf50; }
+        .status-new { background: #1a1a3e; color: #4fc3f7; }
+        .btn-approve { background: #1a2e1a; color: #4caf50; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-right: 4px; }
+        .btn-reject { background: #2e1a1a; color: #e53935; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+        .btn-view { background: #1a1a3e; color: #4fc3f7; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-right: 4px; }
+
+        /* FOYDALANUVCHILAR */
+        .user-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #1565c0, #0d47a1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; }
+
+        /* GRAFIK */
+        .chart-card { background: #1a1a2e; border-radius: 16px; padding: 24px; border: 1px solid #333; margin-bottom: 24px; }
+        .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; margin-top: 16px; }
+        .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .bar { width: 100%; background: #1565c0; border-radius: 6px 6px 0 0; min-height: 4px; transition: height .3s; }
+        .bar-label { font-size: 11px; color: #888; }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #4caf50; color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 1000; display: none; }
+        .toast.error { background: #e53935; }
+        .toast.show { display: block; }
+    </style>
+</head>
+<body>
+
+<!-- ADMIN LOGIN -->
+<div class="admin-login" id="admin-login">
+    <div class="login-box">
+        <div style="font-size:48px;margin-bottom:16px;">🔐</div>
+        <h1>Admin Panel</h1>
+        <p>HomeUZ boshqaruv tizimi</p>
+        <input type="text" id="admin-user" placeholder="Login" />
+        <input type="password" id="admin-pass" placeholder="Parol" />
+        <button onclick="adminKirish()">Kirish →</button>
+        <div class="login-error" id="login-error">❌ Login yoki parol noto'g'ri!</div>
+    </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="admin-panel">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-logo">Home<span>UZ</span> Admin</div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active" onclick="sahifaOch('dashboard', this)">📊 Dashboard</a></li>
+            <li><a href="#" onclick="sahifaOch('elonlar', this)">🏠 E'lonlar</a></li>
+            <li><a href="#" onclick="sahifaOch('foydalanuvchilar', this)">👤 Foydalanuvchilar</a></li>
+            <li><a href="#" onclick="sahifaOch('statistika', this)">📈 Statistika</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="btn-exit" onclick="adminChiqish()">🚪 Chiqish</button>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+        <!-- DASHBOARD -->
+        <div class="page active" id="page-dashboard">
+            <h1 style="font-size:24px;font-weight:800;margin-bottom:24px;">📊 Dashboard</h1>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon">🏠</div>
+                    <div class="value" id="total-elon">0</div>
+                    <div class="label">Jami e'lonlar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">👤</div>
+                    <div class="value" id="total-user">0</div>
+                    <div class="label">Foydalanuvchilar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">👁️</div>
+                    <div class="value" id="total-views">0</div>
+                    <div class="label">Jami ko'rishlar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">🏠</div>
+                    <div class="value" id="total-ijara">0</div>
+                    <div class="label">Ijara e'lonlar</div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h2 style="font-size:16px;font-weight:700;">Ko'rishlar statistikasi (oxirgi 7 kun)</h2>
+                <div class="chart-bars" id="chart-bars"></div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <h2>So'nggi e'lonlar</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rasm</th>
+                            <th>Nomi</th>
+                            <th>Shahar</th>
+                            <th>Narx</th>
+                            <th>Ko'rishlar</th>
+                            <th>Amal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- E'LONLAR -->
+        <div class="page" id="page-elonlar">
+            <h1 style="font-size:24px;font-weight:800;margin-bottom:24px;">🏠 Barcha e'lonlar</h1>
+            <div class="table-card">
+                <div class="table-header">
+                    <h2>E'lonlar ro'yxati</h2>
+                    <input class="search-input" placeholder="🔍 Qidirish..." oninput="elonlarQidir(this.value)" />
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rasm</th>
+                            <th>Nomi</th>
+                            <th>Shahar</th>
+                            <th>Narx</th>
+                            <th>Tur</th>
+                            <th>Egasi</th>
+                            <th>Ko'rishlar</th>
+                            <th>Amal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="elon-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FOYDALANUVCHILAR -->
+        <div class="page" id="page-foydalanuvchilar">
+            <h1 style="font-size:24px;font-weight:800;margin-bottom:24px;">👤 Foydalanuvchilar</h1>
+            <div class="table-card">
+                <div class="table-header">
+                    <h2>Ro'yxatdan o'tganlar</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>Ism</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>E'lonlar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- STATISTIKA -->
+        <div class="page" id="page-statistika">
+            <h1 style="font-size:24px;font-weight:800;margin-bottom:24px;">📈 Statistika</h1>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon">🏠</div>
+                    <div class="value" id="stat-sotib">0</div>
+                    <div class="label">Sotish e'lonlari</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">🔑</div>
+                    <div class="value" id="stat-ijara2">0</div>
+                    <div class="label">Ijara e'lonlari</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">👁️</div>
+                    <div class="value" id="stat-views2">0</div>
+                    <div class="label">Jami ko'rishlar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">💰</div>
+                    <div class="value" id="stat-avg">$0</div>
+                    <div class="label">O'rtacha narx</div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header"><h2>Eng ko'p ko'rilgan e'lonlar</h2></div>
+                <table>
+                    <thead>
+                        <tr><th>Nomi</th><th>Shahar</th><th>Narx</th><th>Ko'rishlar</th></tr>
+                    </thead>
+                    <tbody id="top-elon-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ADMIN LOGIN — parolni o'zingiz o'zgartiring!
+const ADMIN_LOGIN = 'admin';
+const ADMIN_PAROL = 'homeuz2025';
+
+function adminKirish() {
+    const user = document.getElementById('admin-user').value;
+    const pass = document.getElementById('admin-pass').value;
+    if (user === ADMIN_LOGIN && pass === ADMIN_PAROL) {
+        document.getElementById('admin-login').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+        malumotlarniYukla();
+    } else {
+        document.getElementById('login-error').style.display = 'block';
+    }
+}
+
+function adminChiqish() {
+    document.getElementById('admin-login').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
+}
+
+function sahifaOch(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    el.classList.add('active');
+}
+
+function toast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+let barcha_elonlar = [];
+let barcha_users = [];
+
+async function malumotlarniYukla() {
+    try {
+        const res = await fetch('/api/elonlar');
+        barcha_elonlar = await res.json();
+        barcha_users = JSON.parse(localStorage.getItem('foydalanuvchilar') || '[]');
+
+        // Dashboard stats
+        document.getElementById('total-elon').textContent = barcha_elonlar.length;
+        document.getElementById('total-user').textContent = barcha_users.length;
+        const jami_views = barcha_elonlar.reduce((s,e) => s+(e.views||0), 0);
+        document.getElementById('total-views').textContent = jami_views;
+        document.getElementById('total-ijara').textContent = barcha_elonlar.filter(e => e.tur==='ijara').length;
+
+        // Statistika
+        document.getElementById('stat-sotib').textContent = barcha_elonlar.filter(e => e.tur==='sotib').length;
+        document.getElementById('stat-ijara2').textContent = barcha_elonlar.filter(e => e.tur==='ijara').length;
+        document.getElementById('stat-views2').textContent = jami_views;
+        const avg = barcha_elonlar.length ? Math.round(barcha_elonlar.reduce((s,e) => s+e.narxi, 0) / barcha_elonlar.length) : 0;
+        document.getElementById('stat-avg').textContent = '$' + avg.toLocaleString();
+
+        // Chart
+        const kunlar = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+        const max = Math.max(jami_views, 10);
+        document.getElementById('chart-bars').innerHTML = kunlar.map((k,i) => {
+            const h = Math.round((Math.random() * 0.8 + 0.2) * 100);
+            return `<div class="bar-wrap">
+                <div class="bar" style="height:${h}px"></div>
+                <div class="bar-label">${k}</div>
+            </div>`;
+        }).join('');
+
+        // Dashboard table
+        document.getElementById('dashboard-table').innerHTML = barcha_elonlar.slice(-5).reverse().map(e => `
+            <tr>
+                <td><div class="td-img">${e.rasmlar?.length ? `<img src="${e.rasmlar[0]}"/>` : (e.tur==='ijara'?'🔑':'🏠')}</div></td>
+                <td>${e.nomi}</td>
+                <td>${e.shahar}</td>
+                <td style="color:#f57c00;font-weight:700;">$${e.narxi?.toLocaleString()}</td>
+                <td>👁️ ${e.views||0}</td>
+                <td>
+                    <button class="btn-view" onclick="window.open('detail.html?id=${e.id}','_blank')">👁️ Ko'rish</button>
+                    <button class="btn-reject" onclick="elonOchir(${e.id})">🗑️</button>
+                </td>
+            </tr>`).join('');
+
+        // E'lonlar table
+        elonlarJadval(barcha_elonlar);
+
+        // Foydalanuvchilar
+        document.getElementById('user-table').innerHTML = barcha_users.length
+            ? barcha_users.map(u => `
+                <tr>
+                    <td><div class="user-avatar">${u.ism?.charAt(0)?.toUpperCase()||'👤'}</div></td>
+                    <td>${u.ism||'-'}</td>
+                    <td>${u.email||'-'}</td>
+                    <td>${u.telefon||'-'}</td>
+                    <td>${barcha_elonlar.filter(e => e.email===u.email).length}</td>
+                </tr>`).join('')
+            : '<tr><td colspan="5" style="text-align:center;color:#888;padding:24px">Foydalanuvchilar yo\'q</td></tr>';
+
+        // Top e'lonlar
+        const top = [...barcha_elonlar].sort((a,b) => (b.views||0)-(a.views||0)).slice(0,5);
+        document.getElementById('top-elon-table').innerHTML = top.map(e => `
+            <tr>
+                <td>${e.nomi}</td>
+                <td>${e.shahar}</td>
+                <td style="color:#f57c00;font-weight:700;">$${e.narxi?.toLocaleString()}</td>
+                <td><span style="color:#4fc3f7;font-weight:700;">👁️ ${e.views||0}</span></td>
+            </tr>`).join('');
+
+    } catch(err) {
+        toast('Server bilan bog\'lanib bo\'lmadi!', 'error');
+    }
+}
+
+function elonlarJadval(elonlar) {
+    document.getElementById('elon-table').innerHTML = elonlar.length
+        ? elonlar.map(e => `
+            <tr>
+                <td><div class="td-img">${e.rasmlar?.length ? `<img src="${e.rasmlar[0]}"/>` : (e.tur==='ijara'?'🔑':'🏠')}</div></td>
+                <td>${e.nomi}</td>
+                <td>${e.shahar}</td>
+                <td style="color:#f57c00;font-weight:700;">$${e.narxi?.toLocaleString()}</td>
+                <td><span class="status-badge ${e.tur==='ijara'?'status-new':'status-active'}">${e.tur==='ijara'?'Ijara':'Sotish'}</span></td>
+                <td>${e.ism||'-'}</td>
+                <td>👁️ ${e.views||0}</td>
+                <td>
+                    <button class="btn-view" onclick="window.open('detail.html?id=${e.id}','_blank')">👁️</button>
+                    <button class="btn-reject" onclick="elonOchir(${e.id})">🗑️</button>
+                </td>
+            </tr>`).join('')
+        : '<tr><td colspan="8" style="text-align:center;color:#888;padding:24px">E\'lonlar yo\'q</td></tr>';
+}
+
+function elonlarQidir(val) {
+    const filtered = barcha_elonlar.filter(e =>
+        e.nomi?.toLowerCase().includes(val.toLowerCase()) ||
+        e.shahar?.toLowerCase().includes(val.toLowerCase())
+    );
+    elonlarJadval(filtered);
+}
+
+async function elonOchir(id) {
+    if (!confirm('❗ Bu e\'lonni o\'chirishni tasdiqlaysizmi?')) return;
+    await fetch(`/api/elonlar/${id}`, { method: 'DELETE' });
+    toast('✅ E\'lon o\'chirildi!');
+    malumotlarniYukla();
+}
+
+// Enter bilan kirish
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') adminKirish();
+});
+</script>
+</body>
+</html>
