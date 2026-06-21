@@ -1,0 +1,85 @@
+{
+  "elonlar": [
+    {
+      "id": 1,
+      "nomi": "3 xonali kvartira",
+      "narxi": 85000,
+      "tur": "sotib",
+      "xona": 3,
+      "maydon": 85,
+      "shahar": "Chilonzor, Toshkent",
+      "tavsif": "Yaxshi ta'mirlangan kvartira",
+      "ism": "Akbar Toshmatov",
+      "telefon": "+998 90 123 45 67",
+      "rasmlar": [],
+      "jihozlar": [
+        "Muzlatgich",
+        "Konditsioner",
+        "Televizor"
+      ],
+      "kommunalka": [
+        "Gaz",
+        "Suv",
+        "Elektr",
+        "Internet"
+      ],
+      "sana": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "nomi": "2 xonali kvartira",
+      "narxi": 400,
+      "tur": "ijara",
+      "xona": 2,
+      "maydon": 62,
+      "shahar": "Yunusobod, Toshkent",
+      "tavsif": "Qulay joylashgan",
+      "ism": "Sardor Rahimov",
+      "telefon": "+998 91 234 56 78",
+      "rasmlar": [],
+      "jihozlar": [
+        "Kravat",
+        "Divan",
+        "Kir yuvish mashinasi"
+      ],
+      "kommunalka": [
+        "Suv",
+        "Elektr",
+        "Internet",
+        "Lift"
+      ],
+      "sana": "2026-06-12T14:00:00.000Z",
+      "views": 1
+    },
+    {
+      "id": 3,
+      "nomi": "4 xonali uy",
+      "narxi": 150000,
+      "tur": "sotib",
+      "xona": 4,
+      "maydon": 140,
+      "shahar": "Mirzo Ulugbek, Toshkent",
+      "tavsif": "Zamonaviy uy",
+      "ism": "Jasur Karimov",
+      "telefon": "+998 93 345 67 89",
+      "rasmlar": [],
+      "jihozlar": [
+        "Divan",
+        "Kravat",
+        "Muzlatgich",
+        "Konditsioner",
+        "Televizor",
+        "Plita"
+      ],
+      "kommunalka": [
+        "Gaz",
+        "Suv",
+        "Elektr",
+        "Internet",
+        "Hovli",
+        "Avtoturargoh"
+      ],
+      "sana": "2026-06-14T09:00:00.000Z"
+    }
+  ]
+}

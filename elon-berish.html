@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E'lon berish — HomeUZ</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f7f8fa; color: #1a1a2e; }
+        .nav { background: #fff; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.07); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 22px; font-weight: 800; color: #1565c0; text-decoration: none; }
+        .logo span { color: #f57c00; }
+        .nav-links a { margin-left: 24px; font-size: 14px; color: #555; text-decoration: none; font-weight: 500; }
+        .nav-links a:hover { color: #1565c0; }
+        .theme-btn { background: none; border: 1.5px solid #e0e0e0; border-radius: 20px; padding: 6px 16px; font-size: 14px; cursor: pointer; margin-left: 16px; }
+        .burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; margin-left: 12px; }
+        .burger span { width: 24px; height: 2px; background: #1565c0; border-radius: 2px; display: block; }
+        .close-btn { display: none; position: fixed; top: 20px; right: 20px; z-index: 1001; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; }
+
+        .container { max-width: 800px; margin: 40px auto; padding: 0 40px 60px; }
+        h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+        .sub { font-size: 14px; color: #888; margin-bottom: 32px; }
+
+        .card { background: #fff; border-radius: 20px; padding: 32px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); margin-bottom: 24px; }
+        .card h2 { font-size: 16px; font-weight: 700; margin-bottom: 20px; color: #1565c0; border-bottom: 2px solid #f0f4ff; padding-bottom: 12px; }
+
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+        label { font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px; margin-top: 16px; }
+        input[type=text], input[type=number], input[type=tel], select, textarea { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px 14px; font-size: 14px; outline: none; transition: border .2s; font-family: inherit; background: #fff; }
+        input:focus, select:focus, textarea:focus { border-color: #1565c0; }
+        textarea { height: 120px; resize: none; }
+
+        .tur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+        .tur-btn { padding: 14px; border: 2px solid #e0e0e0; border-radius: 12px; text-align: center; cursor: pointer; font-size: 14px; font-weight: 600; color: #888; transition: all .2s; }
+        .tur-btn.active { border-color: #1565c0; color: #1565c0; background: #f0f4ff; }
+
+        .check-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+        .check-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1.5px solid #e0e0e0; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all .2s; }
+        .check-item input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: #1565c0; }
+        .check-item.checked { border-color: #1565c0; background: #f0f4ff; color: #1565c0; }
+
+        .upload-area { border: 2px dashed #e0e0e0; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; margin-top: 8px; transition: all .2s; }
+        .upload-area:hover { border-color: #1565c0; background: #f0f4ff; }
+        .upload-icon { font-size: 36px; margin-bottom: 8px; }
+        .upload-text { font-size: 14px; color: #888; }
+        .preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+        .preview-img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; border: 1.5px solid #e0e0e0; }
+
+        .btn-submit { width: 100%; background: #1565c0; color: #fff; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+        .btn-submit:hover { background: #0d47a1; }
+
+        .message { padding: 16px; border-radius: 12px; font-size: 15px; margin-top: 16px; display: none; text-align: center; }
+        .message.success { background: #e8f5e9; color: #2e7d32; display: block; }
+        .message.error { background: #fce4ec; color: #c62828; display: block; }
+
+        body.dark { background: #0f0f1a; color: #e0e0e0; }
+        body.dark .nav { background: #1a1a2e; }
+        body.dark .card { background: #1a1a2e; }
+        body.dark input, body.dark select, body.dark textarea { background: #252540; border-color: #333; color: #e0e0e0; }
+        body.dark .check-item { border-color: #333; color: #aaa; }
+        body.dark .check-item.checked { background: #252540; border-color: #1565c0; color: #4fc3f7; }
+        body.dark .burger span { background: #fff; }
+
+        @media (max-width: 768px) {
+            .nav { padding: 12px 16px; }
+            .nav-links { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 24px; }
+            .nav-links.open { display: flex; }
+            .nav-links a { margin-left: 0; font-size: 20px; color: #fff !important; }
+            .burger { display: flex; }
+            .container { padding: 0 16px 40px; margin-top: 20px; }
+            .grid2, .grid3 { grid-template-columns: 1fr; }
+            .check-grid { grid-template-columns: 1fr 1fr; }
+            .preview-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html" class="logo">Home<span>UZ</span></a>
+    <div class="nav-links" id="nav-links">
+        <a href="index.html" onclick="burgerYop()">Bosh sahifa</a>
+        <a href="listings.html" onclick="burgerYop()">E'lonlar</a>
+        <a href="elon-berish.html" onclick="burgerYop()">E'lon berish</a>
+        <a href="login.html" id="nav-kirish" onclick="burgerYop()">Kirish</a>
+        <a href="kabinet.html" id="nav-kabinet" style="display:none" onclick="burgerYop()">👤 Kabinet</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button onclick="toggleDark()" id="theme-btn" class="theme-btn">🌙 Tun</button>
+        <button class="burger" onclick="burgerOch()">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+<button class="close-btn" onclick="burgerYop()" id="close-btn">✕</button>
+
+<div class="container">
+    <h1>E'lon berish 🏠</h1>
+    <p class="sub">Uyingiz haqida ma'lumot kiriting — bepul!</p>
+
+    <div class="card">
+        <h2>📋 E'lon turi</h2>
+        <div class="tur-grid">
+            <div class="tur-btn active" onclick="turTanla(this, 'sotib')">🏠 Sotish</div>
+            <div class="tur-btn" onclick="turTanla(this, 'ijara')">🔑 Ijaraga berish</div>
+        </div>
+        <input type="hidden" id="tur" value="sotib" />
+    </div>
+
+    <div class="card">
+        <h2>🏡 Mulk haqida</h2>
+        <label>E'lon sarlavhasi</label>
+        <input type="text" id="nomi" placeholder="Masalan: 3 xonali zamonaviy kvartira" />
+        <label>Shahar / Tuman</label>
+        <input type="text" id="shahar" placeholder="Masalan: Chilonzor, Toshkent" />
+        <label>Tavsif</label>
+        <textarea id="tavsif" placeholder="Uy haqida batafsil ma'lumot yozing..."></textarea>
+    </div>
+
+    <div class="card">
+        <h2>📐 Xususiyatlar</h2>
+        <div class="grid3">
+            <div>
+                <label>Xonalar soni</label>
+                <select id="xona">
+                    <option value="1">1 xona</option>
+                    <option value="2">2 xona</option>
+                    <option value="3" selected>3 xona</option>
+                    <option value="4">4 xona</option>
+                    <option value="5">5+ xona</option>
+                </select>
+            </div>
+            <div>
+                <label>Maydon (m²)</label>
+                <input type="number" id="maydon" placeholder="85" />
+            </div>
+            <div>
+                <label>Qavat</label>
+                <input type="text" id="qavat" placeholder="5/9" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🛋️ Jihozlar va texnika</h2>
+        <div class="check-grid" id="jihozlar-grid">
+            <label class="check-item"><input type="checkbox" value="Muzlatgich"> ❄️ Muzlatgich</label>
+            <label class="check-item"><input type="checkbox" value="Konditsioner"> 🌬️ Konditsioner</label>
+            <label class="check-item"><input type="checkbox" value="Televizor"> 📺 Televizor</label>
+            <label class="check-item"><input type="checkbox" value="Kir yuvish mashinasi"> 🫧 Kir yuvish</label>
+            <label class="check-item"><input type="checkbox" value="Divan"> 🛋️ Divan</label>
+            <label class="check-item"><input type="checkbox" value="Kravat"> 🛏️ Kravat</label>
+            <label class="check-item"><input type="checkbox" value="Plita"> 🍳 Plita</label>
+            <label class="check-item"><input type="checkbox" value="Ta'mirlangan"> 🎨 Ta'mirlangan</label>
+            <label class="check-item"><input type="checkbox" value="Mebel"> 🪑 Mebel</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>💡 Kommunal xizmatlar</h2>
+        <div class="check-grid" id="kommunalka-grid">
+            <label class="check-item"><input type="checkbox" value="Gaz"> 🔥 Gaz</label>
+            <label class="check-item"><input type="checkbox" value="Suv"> 💧 Suv</label>
+            <label class="check-item"><input type="checkbox" value="Elektr"> ⚡ Elektr</label>
+            <label class="check-item"><input type="checkbox" value="Internet"> 🌐 Internet</label>
+            <label class="check-item"><input type="checkbox" value="Lift"> 🛗 Lift</label>
+            <label class="check-item"><input type="checkbox" value="Avtoturargoh"> 🚗 Avtoturargoh</label>
+            <label class="check-item"><input type="checkbox" value="Qo'riqchi"> 🔒 Qo'riqchi</label>
+            <label class="check-item"><input type="checkbox" value="Hovli"> 🌿 Hovli</label>
+            <label class="check-item"><input type="checkbox" value="Basseyn"> 🏊 Basseyn</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>✍️ Qo'shimcha qulayliklar</h2>
+        <p style="font-size:13px;color:#888;margin-bottom:12px;">Kommunalka, jihozlar yoki boshqa ma'lumotlar</p>
+        <textarea id="qulayliklar" placeholder="Masalan: Kommunalka o'zidan, oshxonada qozon-tovoqlar bor..."></textarea>
+    </div>
+
+    <div class="card">
+        <h2>💰 Narx</h2>
+        <div class="grid2">
+            <div>
+                <label>Narx ($)</label>
+                <input type="number" id="narxi" placeholder="85000" />
+            </div>
+            <div>
+                <label>Muzokarali</label>
+                <select id="muzokarali">
+                    <option value="ha">Ha, muzokarali</option>
+                    <option value="yoq">Yo'q, qat'iy narx</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📞 Bog'lanish</h2>
+        <div class="grid2">
+            <div>
+                <label>Ismingiz</label>
+                <input type="text" id="ism" placeholder="Ism Familiya" />
+            </div>
+            <div>
+                <label>Telefon</label>
+                <input type="tel" id="telefon" placeholder="+998 90 123 45 67" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📸 Rasm va video</h2>
+        <div class="upload-area" onclick="document.getElementById('rasm-input').click()">
+            <div class="upload-icon">📷🎥</div>
+            <div class="upload-text">Rasm yoki video yuklash uchun bosing<br><small>JPG, PNG, MP4 — 15 tagacha</small></div>
+        </div>
+        <input type="file" id="rasm-input" accept="image/*,video/mp4,video/webm" multiple style="display:none" onchange="rasmlarniKorsat(this)"/>
+        <div class="preview-grid" id="preview-grid"></div>
+    </div>
+
+    <button class="btn-submit" onclick="elonYuborish()">✅ E'lonni joylash</button>
+    <div id="message" class="message"></div>
+</div>
+
+<script>
+const joriy_nav = JSON.parse(localStorage.getItem('joriy_foydalanuvchi') || 'null');
+if (joriy_nav) {
+    document.getElementById('nav-kirish').style.display = 'none';
+    document.getElementById('nav-kabinet').style.display = 'inline';
+}
+
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+    document.getElementById('theme-btn').textContent = '☀️ Kun';
+}
+
+function toggleDark() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.getElementById('theme-btn').textContent = isDark ? '☀️ Kun' : '🌙 Tun';
+}
+
+function burgerOch() {
+    document.getElementById('nav-links').classList.add('open');
+    document.getElementById('close-btn').style.display = 'block';
+}
+
+function burgerYop() {
+    document.getElementById('nav-links').classList.remove('open');
+    document.getElementById('close-btn').style.display = 'none';
+}
+
+const joriy = JSON.parse(localStorage.getItem('joriy_foydalanuvchi') || 'null');
+if (!joriy) {
+    localStorage.setItem('qaytish_url', 'elon-berish.html');
+    window.location.href = 'login.html';
+} else {
+    document.getElementById('ism').value = joriy.ism || '';
+    document.getElementById('telefon').value = joriy.telefon || '';
+}
+
+let tanlanganTur = 'sotib';
+
+function turTanla(el, tur) {
+    document.querySelectorAll('.tur-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    tanlanganTur = tur;
+}
+
+document.querySelectorAll('.check-item input').forEach(cb => {
+    cb.addEventListener('change', function() {
+        this.parentElement.classList.toggle('checked', this.checked);
+    });
+});
+
+function rasmlarniKorsat(input) {
+    const grid = document.getElementById('preview-grid');
+    grid.innerHTML = '';
+    Array.from(input.files).slice(0, 15).forEach(file => {
+        if (file.type.startsWith('video/')) {
+            const video = document.createElement('video');
+            video.style.cssText = 'width:100%;height:80px;object-fit:cover;border-radius:8px;border:1.5px solid #e0e0e0;';
+            video.controls = true;
+            video.src = URL.createObjectURL(file);
+            grid.appendChild(video);
+        } else {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'preview-img';
+                grid.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+function checkboxlarniOl(gridId) {
+    return Array.from(document.querySelectorAll(`#${gridId} input:checked`)).map(c => c.value);
+}
+
+async function elonYuborish() {
+    const nomi        = document.getElementById('nomi').value;
+    const shahar      = document.getElementById('shahar').value;
+    const narxi       = document.getElementById('narxi').value;
+    const tavsif      = document.getElementById('tavsif').value;
+    const xona        = document.getElementById('xona').value;
+    const maydon      = document.getElementById('maydon').value;
+    const ism         = document.getElementById('ism').value;
+    const telefon     = document.getElementById('telefon').value;
+    const qulayliklar = document.getElementById('qulayliklar').value;
+    const msg         = document.getElementById('message');
+
+    if (!nomi||!shahar||!narxi||!tavsif||!maydon||!ism||!telefon) {
+        msg.className='message error';
+        msg.textContent='❌ Barcha maydonlarni to\'ldiring!';
+        return;
+    }
+
+    const yangiElon = {
+        nomi, shahar, tavsif, ism, telefon, qulayliklar,
+        email: joriy?.email || '',
+        narxi: parseInt(narxi),
+        xona: parseInt(xona),
+        maydon: parseInt(maydon),
+        tur: tanlanganTur,
+        jihozlar: checkboxlarniOl('jihozlar-grid'),
+        kommunalka: checkboxlarniOl('kommunalka-grid'),
+        rasmlar: [],
+        views: 0,
+        sana: new Date().toISOString()
+    };
+
+    try {
+        const res = await fetch('/api/elonlar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(yangiElon)
+        });
+        const savedElon = await res.json();
+
+        const rasmInput = document.getElementById('rasm-input');
+        if (rasmInput.files.length > 0) {
+            const formData = new FormData();
+            Array.from(rasmInput.files).forEach(f => formData.append('rasmlar', f));
+            await fetch(`/api/rasm/${savedElon.id}`, { method: 'POST', body: formData });
+        }
+
+        msg.className='message success';
+        msg.textContent='✅ E\'lon muvaffaqiyatli joylashtirildi!';
+        setTimeout(() => window.location.href = 'kabinet.html', 2000);
+    } catch(err) {
+        msg.className='message error';
+        msg.textContent='❌ Xato yuz berdi!';
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeUZ - Uy topish platformasi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f7f8fa; color: #1a1a2e; }
+        .nav { background: #fff; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.07); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 22px; font-weight: 800; color: #1565c0; text-decoration: none; }
+        .logo span { color: #f57c00; }
+        .nav-links a { margin-left: 24px; font-size: 14px; color: #555; text-decoration: none; font-weight: 500; }
+        .nav-links a:hover { color: #1565c0; }
+        .theme-btn { background: none; border: 1.5px solid #e0e0e0; border-radius: 20px; padding: 6px 16px; font-size: 14px; cursor: pointer; margin-left: 16px; }
+        .burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; margin-left: 12px; }
+        .burger span { width: 24px; height: 2px; background: #1565c0; border-radius: 2px; display: block; }
+        .close-btn { display: none; position: fixed; top: 20px; right: 20px; z-index: 1001; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; }
+
+        .hero { background: linear-gradient(135deg, #1565c0, #1a237e); padding: 70px 40px 80px; text-align: center; user-select: none; }
+        .hero h1 { font-size: 40px; color: #fff; font-weight: 800; margin-bottom: 12px; }
+        .hero p { font-size: 17px; color: #bbdefb; margin-bottom: 36px; }
+        .search-box { background: #fff; border-radius: 14px; padding: 8px; display: inline-flex; gap: 8px; max-width: 600px; width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+        .search-box input { border: none; outline: none; padding: 10px 16px; font-size: 15px; flex: 1; border-radius: 10px; }
+        .search-box select { border: none; outline: none; padding: 10px; background: #f0f4ff; border-radius: 10px; font-size: 14px; }
+        .search-box button { background: #f57c00; color: #fff; border: none; padding: 10px 26px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; }
+        .stats { display: flex; justify-content: center; gap: 48px; margin-top: 40px; }
+        .stat strong { display: block; font-size: 26px; color: #fff; font-weight: 800; }
+        .stat span { font-size: 13px; color: #90caf9; }
+
+        .section { padding: 50px 40px; max-width: 1200px; margin: 0 auto; }
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .section-title { font-size: 24px; font-weight: 800; }
+        .see-all { color: #1565c0; text-decoration: none; font-size: 14px; font-weight: 600; }
+        .section-sub { font-size: 14px; color: #888; margin-bottom: 28px; }
+
+        .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+        .card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,0.07); transition: transform .2s, box-shadow .2s; cursor: pointer; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+        .card-img { height: 180px; display: flex; align-items: center; justify-content: center; font-size: 56px; position: relative; overflow: hidden; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; }
+        .blue   { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
+        .green  { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+        .orange { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+        .purple { background: linear-gradient(135deg, #f3e5f5, #e1bee7); }
+        .badge { position: absolute; top: 12px; left: 12px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge.sotib { background: #e3f2fd; color: #1565c0; }
+        .badge.ijara { background: #e8f5e9; color: #2e7d32; }
+        .card-body { padding: 18px; }
+        .card-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+        .card-loc { font-size: 13px; color: #888; margin-bottom: 6px; }
+        .card-info { display: flex; gap: 12px; font-size: 12px; color: #aaa; margin-bottom: 12px; }
+        .card-price { font-size: 20px; font-weight: 800; color: #f57c00; }
+
+        .features { background: #fff; padding: 50px 40px; }
+        .feat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 28px auto 0; }
+        .feat { text-align: center; padding: 28px 16px; border-radius: 14px; background: #f7f8fa; }
+        .feat-icon { font-size: 36px; margin-bottom: 12px; }
+        .feat h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .feat p { font-size: 13px; color: #888; line-height: 1.5; }
+
+        .cta { background: linear-gradient(135deg, #f57c00, #e65100); padding: 50px 40px; text-align: center; }
+        .cta h2 { font-size: 28px; color: #fff; font-weight: 800; margin-bottom: 10px; }
+        .cta p { color: #ffe0b2; font-size: 15px; margin-bottom: 24px; }
+        .cta button { background: #fff; color: #e65100; border: none; padding: 14px 36px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; }
+
+        footer { background: #1a1a2e; padding: 24px 40px; text-align: center; }
+        footer p { color: #555; font-size: 13px; }
+        footer span { color: #1565c0; font-weight: 700; }
+        .loading { text-align: center; padding: 40px; color: #888; }
+
+        /* DARK */
+        body.dark { background: #0f0f1a; color: #e0e0e0; }
+        body.dark .nav { background: #1a1a2e; }
+        body.dark .card { background: #1a1a2e; }
+        body.dark .card-title { color: #e0e0e0; }
+        body.dark .features { background: #1a1a2e; }
+        body.dark .feat { background: #252540; }
+        body.dark .burger span { background: #fff; }
+
+        /* MOBIL */
+        @media (max-width: 768px) {
+            .nav { padding: 12px 16px; }
+            .nav-links { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 24px; }
+            .nav-links.open { display: flex; }
+            .nav-links a { margin-left: 0; font-size: 20px; color: #fff !important; }
+            .burger { display: flex; }
+            .hero { padding: 40px 16px 50px; }
+            .hero h1 { font-size: 24px; }
+            .search-box { flex-direction: column; }
+            .stats { gap: 24px; }
+            .section { padding: 24px 16px; }
+            .features { padding: 24px 16px; }
+            .feat-grid { grid-template-columns: 1fr 1fr; }
+            .cards { grid-template-columns: 1fr; }
+            .cta { padding: 32px 16px; }
+            .cta h2 { font-size: 20px; }
+            footer { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html" class="logo">Home<span>UZ</span></a>
+    <div class="nav-links" id="nav-links">
+        <a href="index.html" onclick="burgerYop()">Bosh sahifa</a>
+        <a href="listings.html" onclick="burgerYop()">E'lonlar</a>
+        <a href="elon-berish.html" onclick="burgerYop()">E'lon berish</a>
+        <a href="login.html" id="nav-kirish" onclick="burgerYop()">Kirish</a>
+        <a href="kabinet.html" id="nav-kabinet" style="display:none" onclick="burgerYop()">👤 Kabinet</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+        <button onclick="toggleDark()" id="theme-btn" class="theme-btn">🌙 Tun</button>
+        <button class="burger" onclick="burgerOch()">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+<button class="close-btn" onclick="burgerYop()" id="close-btn">✕</button>
+
+<div class="hero">
+    <h1>O'zbekistonda orzuingiz<br>uyini toping</h1>
+    <p>10,000+ ta uy, kvartira va ofis e'lonlari bir joyda</p>
+    <div class="search-box">
+        <input type="text" placeholder="🔍 Shahar yoki tuman kiriting..." id="heroSearch"/>
+        <select id="heroType">
+            <option value="">Hammasi</option>
+            <option value="sotib">Sotib olish</option>
+            <option value="ijara">Ijaraga olish</option>
+        </select>
+        <button onclick="qidirish()">Qidirish</button>
+    </div>
+    <div class="stats">
+        <div class="stat"><strong id="elon-soni">0</strong><span>E'lonlar</span></div>
+        <div class="stat"><strong>5,000+</strong><span>Muvaffaqiyatli bitimlar</span></div>
+        <div class="stat"><strong>150+</strong><span>Hududlar</span></div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-header">
+        <div class="section-title">So'nggi e'lonlar</div>
+        <a href="listings.html" class="see-all">Hammasini ko'rish →</a>
+    </div>
+    <div class="section-sub">Toshkentdagi eng yangi uylar</div>
+    <div class="cards" id="cardGrid">
+        <div class="loading">⏳ E'lonlar yuklanmoqda...</div>
+    </div>
+</div>
+
+<div class="features">
+    <div class="section-title" style="text-align:center;max-width:1200px;margin:0 auto;">Nima uchun HomeUZ?</div>
+    <div class="feat-grid">
+        <div class="feat"><div class="feat-icon">🔒</div><h3>Xavfsiz bitim</h3><p>Har bir e'lon tekshirilgan</p></div>
+        <div class="feat"><div class="feat-icon">⚡</div><h3>Tez qidiruv</h3><p>Minglab e'lonlar orasidan toping</p></div>
+        <div class="feat"><div class="feat-icon">💬</div><h3>Bevosita aloqa</h3><p>Egasi bilan bog'laning</p></div>
+        <div class="feat"><div class="feat-icon">📊</div><h3>Narx tahlili</h3><p>Bozor narxlarini solishtiring</p></div>
+    </div>
+</div>
+
+<div class="cta">
+    <h2>Uyingizni bugun e'lon qiling!</h2>
+    <p>Bepul ro'yxatdan o'ting va minglab xaridorlar bilan bog'laning</p>
+    <button onclick="window.location.href='elon-berish.html'">Bepul e'lon berish →</button>
+</div>
+
+<footer>
+    <p>© 2025 <span>HomeUZ</span> — Barcha huquqlar himoyalangan</p>
+</footer>
+
+<script>
+const ranglar = ['blue','green','orange','purple'];
+
+const joriy_nav = JSON.parse(localStorage.getItem('joriy_foydalanuvchi') || 'null');
+if (joriy_nav) {
+    document.getElementById('nav-kirish').style.display = 'none';
+    document.getElementById('nav-kabinet').style.display = 'inline';
+}
+
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+    document.getElementById('theme-btn').textContent = '☀️ Kun';
+}
+
+function toggleDark() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.getElementById('theme-btn').textContent = isDark ? '☀️ Kun' : '🌙 Tun';
+}
+
+function burgerOch() {
+    document.getElementById('nav-links').classList.add('open');
+    document.getElementById('close-btn').style.display = 'block';
+}
+
+function burgerYop() {
+    document.getElementById('nav-links').classList.remove('open');
+    document.getElementById('close-btn').style.display = 'none';
+}
+
+async function elonlarniYukla() {
+    try {
+        const res = await fetch('/api/elonlar');
+        const elonlar = await res.json();
+        document.getElementById('elon-soni').textContent = elonlar.length + '+';
+        const oxirgi6 = elonlar.slice(-6).reverse();
+        if (!oxirgi6.length) { document.getElementById('cardGrid').innerHTML = '<p style="color:#888">Hozircha e\'lon yo\'q</p>'; return; }
+        document.getElementById('cardGrid').innerHTML = oxirgi6.map((elon, i) => {
+            const rang = ranglar[i % ranglar.length];
+            const ikona = elon.tur === 'ijara' ? '🔑' : '🏠';
+            const narxMatn = elon.tur === 'ijara' ? `$${elon.narxi?.toLocaleString()}/oy` : `$${elon.narxi?.toLocaleString()}`;
+            const imgHTML = elon.rasmlar?.length ? `<img src="${elon.rasmlar[0]}" style="width:100%;height:100%;object-fit:cover;"/>` : `<span>${ikona}</span>`;
+            return `<div class="card" onclick="window.location='detail.html?id=${elon.id}'">
+                <div class="card-img ${rang}">${imgHTML}<span class="badge ${elon.tur}">${elon.tur==='ijara'?'Ijara':'Sotish'}</span></div>
+                <div class="card-body">
+                    <div class="card-title">${elon.nomi}</div>
+                    <div class="card-loc">📍 ${elon.shahar}</div>
+                    <div class="card-info"><span>📐 ${elon.maydon} m²</span><span>🛏 ${elon.xona} xona</span></div>
+                    <div class="card-price">${narxMatn}</div>
+                    <div style="font-size:11px;color:#aaa;margin-top:6px;">🕐 ${vaqtniKorsat(elon.sana)}</div>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(err) {
+        document.getElementById('cardGrid').innerHTML = '<p style="color:#888">Server bilan bog\'lanib bo\'lmadi</p>';
+    }
+}
+
+function vaqtniKorsat(sana) {
+    if (!sana) return '';
+    const farq = Math.floor((new Date() - new Date(sana)) / 1000);
+    if (farq < 60) return 'Hozirgina';
+    if (farq < 3600) return `${Math.floor(farq/60)} daqiqa oldin`;
+    if (farq < 86400) return `${Math.floor(farq/3600)} soat oldin`;
+    if (farq < 604800) return `${Math.floor(farq/86400)} kun oldin`;
+    return `${Math.floor(farq/2592000)} oy oldin`;
+}
+
+function qidirish() {
+    const search = document.getElementById('heroSearch').value;
+    const type = document.getElementById('heroType').value;
+    window.location.href = `listings.html?search=${search}&type=${type}`;
+}
+
+elonlarniYukla();
+</script>
+</body>
+</html>

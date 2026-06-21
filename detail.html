@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E'lon — HomeUZ</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f7f8fa; color: #1a1a2e; }
+        .nav { background: #fff; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .logo { font-size: 22px; font-weight: 800; color: #1565c0; text-decoration: none; }
+        .logo span { color: #f57c00; }
+        .nav-links a { margin-left: 24px; font-size: 14px; color: #555; text-decoration: none; font-weight: 500; }
+        .nav-links a:hover { color: #1565c0; }
+        .theme-btn { background: none; border: 1.5px solid #e0e0e0; border-radius: 20px; padding: 6px 16px; font-size: 14px; cursor: pointer; margin-left: 16px; }
+
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; margin: 24px 40px; color: #1565c0; text-decoration: none; font-size: 14px; font-weight: 600; }
+        .back-btn:hover { text-decoration: underline; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 40px 60px; }
+
+        .gallery-main { border-radius: 20px; height: 420px; overflow: hidden; margin-bottom: 12px; position: relative; background: linear-gradient(135deg, #e3f2fd, #bbdefb); display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
+        .gallery-main img, .gallery-main video { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; }
+        .gallery-badge { position: absolute; top: 20px; left: 20px; color: #fff; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 700; z-index: 2; }
+        .badge-sotib { background: #1565c0; }
+        .badge-ijara { background: #2e7d32; }
+        .gallery-count { position: absolute; bottom: 16px; right: 16px; background: rgba(0,0,0,0.5); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        .gallery-fullscreen { position: absolute; bottom: 16px; left: 16px; background: rgba(0,0,0,0.5); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; border: none; }
+
+        .gallery-thumbs { display: flex; gap: 10px; margin-bottom: 32px; overflow-x: auto; padding-bottom: 4px; }
+        .gallery-thumbs::-webkit-scrollbar { height: 4px; }
+        .gallery-thumbs::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+        .thumb { width: 100px; height: 70px; object-fit: cover; border-radius: 10px; cursor: pointer; border: 2px solid transparent; transition: all .2s; flex-shrink: 0; }
+        .thumb:hover, .thumb.active { border-color: #1565c0; }
+
+        .lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; }
+        .lightbox.open { display: flex; }
+        .lightbox-content { max-width: 90%; max-height: 90vh; position: relative; }
+        .lightbox-content img, .lightbox-content video { max-width: 100%; max-height: 85vh; border-radius: 12px; }
+        .lightbox-close { position: absolute; top: -40px; right: 0; color: #fff; font-size: 28px; cursor: pointer; background: none; border: none; }
+        .lightbox-prev, .lightbox-next { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 28px; padding: 16px 20px; cursor: pointer; border-radius: 10px; }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        .lightbox-counter { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 14px; background: rgba(0,0,0,0.5); padding: 6px 16px; border-radius: 20px; }
+
+        .content { display: grid; grid-template-columns: 1fr 340px; gap: 32px; }
+        .left h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+        .location { font-size: 15px; color: #888; margin-bottom: 20px; }
+        .price-box { background: #fff; border-radius: 16px; padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .price { font-size: 32px; font-weight: 800; color: #f57c00; }
+        .price small { font-size: 14px; color: #aaa; font-weight: 400; }
+
+        .sev-btn { background: none; border: 2px solid #e0e0e0; border-radius: 12px; padding: 10px 16px; font-size: 20px; cursor: pointer; transition: all .2s; }
+        .sev-btn:hover, .sev-btn.active { border-color: #e53935; }
+
+        .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+        .feature { background: #fff; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .feature-icon { font-size: 24px; margin-bottom: 6px; }
+        .feature-value { font-size: 16px; font-weight: 700; }
+        .feature-label { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; margin-top: 24px; }
+        .description { font-size: 15px; color: #555; line-height: 1.8; }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+        .tag { background: #f0f4ff; color: #1565c0; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+        .tag.kommunalka { background: #f0fff4; color: #2e7d32; }
+
+        .contact-card { background: #fff; border-radius: 20px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); position: sticky; top: 20px; }
+        .contact-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+        .agent { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0; }
+        .agent-avatar { width: 52px; height: 52px; background: linear-gradient(135deg, #1565c0, #0d47a1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; }
+        .agent-name { font-size: 15px; font-weight: 700; }
+        .agent-phone { font-size: 13px; color: #1565c0; margin-top: 4px; font-weight: 600; }
+
+        .login-talab { background: #fff3e0; border: 1.5px solid #ffcc80; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 12px; }
+        .login-talab p { font-size: 14px; color: #e65100; margin-bottom: 12px; }
+        .login-talab a { display: inline-block; background: #1565c0; color: #fff; padding: 10px 24px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; }
+
+        .contact-card input, .contact-card textarea { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px 14px; font-size: 14px; outline: none; margin-bottom: 12px; font-family: inherit; }
+        .contact-card input:focus, .contact-card textarea:focus { border-color: #1565c0; }
+        .contact-card textarea { height: 100px; resize: none; }
+        .btn-contact { width: 100%; background: #1565c0; color: #fff; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
+        .btn-contact:hover { background: #0d47a1; }
+        .btn-call { width: 100%; background: #f0f4ff; color: #1565c0; border: 2px solid #1565c0; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; display: block; text-align: center; text-decoration: none; }
+        .btn-call:hover { background: #e3f2fd; }
+
+        .loading { text-align: center; padding: 60px; font-size: 18px; color: #888; }
+
+        body.dark { background: #0f0f1a; color: #e0e0e0; }
+        body.dark .nav { background: #1a1a2e; }
+        body.dark .feature, body.dark .price-box, body.dark .contact-card { background: #1a1a2e; }
+        body.dark .description { color: #bbb; }
+        body.dark .contact-card input, body.dark .contact-card textarea { background: #252540; border-color: #333; color: #e0e0e0; }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html" class="logo">Home<span>UZ</span></a>
+    <div class="nav-links">
+        <a href="index.html">Bosh sahifa</a>
+        <a href="listings.html">E'lonlar</a>
+        <a href="elon-berish.html">E'lon berish</a>
+        <a href="login.html" id="nav-kirish">Kirish</a>
+        <a href="kabinet.html" id="nav-kabinet" style="display:none">👤 Kabinet</a>
+    </div>
+    <button onclick="toggleDark()" id="theme-btn" class="theme-btn">🌙 Tun</button>
+    <button class="burger" onclick="burgerOch()" id="burger">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+<button class="close-btn" onclick="burgerYop()" id="close-btn">✕</button>
+
+<a href="listings.html" class="back-btn">← E'lonlarga qaytish</a>
+
+<div class="container" id="content">
+    <div class="loading">⏳ Ma'lumot yuklanmoqda...</div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="lightboxYop(event)">
+    <div class="lightbox-content" id="lightbox-content">
+        <button class="lightbox-close" onclick="lightboxYop()">✕</button>
+    </div>
+    <button class="lightbox-prev" onclick="lightboxOldingi(event)">❮</button>
+    <button class="lightbox-next" onclick="lightboxKeyingi(event)">❯</button>
+    <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
+<script>
+// Nav login tekshirish
+const joriy_nav = JSON.parse(localStorage.getItem('joriy_foydalanuvchi') || 'null');
+if (joriy_nav) {
+    document.getElementById('nav-kirish').style.display = 'none';
+    document.getElementById('nav-kabinet').style.display = 'inline';
+}
+
+// Dark mode
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+    document.getElementById('theme-btn').textContent = '☀️ Kun';
+}
+function toggleDark() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.getElementById('theme-btn').textContent = isDark ? '☀️ Kun' : '🌙 Tun';
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get('id');
+let barcha_media = [];
+let joriy_index = 0;
+
+function isVideo(src) { return src && src.match(/\.(mp4|webm|ogg)$/i); }
+
+async function elonniYukla() {
+    if (!id) { window.location.href = 'listings.html'; return; }
+    try {
+        const res = await fetch(`/api/elonlar/${id}`);
+        if (!res.ok) {
+            document.getElementById('content').innerHTML = `<div style="text-align:center;padding:60px"><h2>❌ E'lon topilmadi</h2><a href="listings.html">Qaytish</a></div>`;
+            return;
+        }
+        const elon = await res.json();
+        elonniKorsat(elon);
+    } catch(err) {
+        document.getElementById('content').innerHTML = `<div style="text-align:center;padding:60px"><h2>❌ Server bilan bog'lanib bo'lmadi</h2></div>`;
+    }
+}
+
+function elonniKorsat(elon) {
+    barcha_media = elon.rasmlar || [];
+    const joriy = JSON.parse(localStorage.getItem('joriy_foydalanuvchi') || 'null');
+
+    const narxMatn = elon.tur === 'ijara'
+        ? `$${elon.narxi.toLocaleString()} <small>/ oy</small>`
+        : `$${elon.narxi.toLocaleString()} <small>yoki muzokarali</small>`;
+
+    const ikona = elon.tur === 'ijara' ? '🔑' : '🏠';
+    const badgeClass = elon.tur === 'ijara' ? 'badge-ijara' : 'badge-sotib';
+    const badgeMatn = elon.tur === 'ijara' ? 'Ijara' : 'Sotish';
+    const galleryRang = elon.tur === 'ijara'
+        ? 'linear-gradient(135deg,#e8f5e9,#c8e6c9)'
+        : 'linear-gradient(135deg,#e3f2fd,#bbdefb)';
+
+    // Sevimli tekshirish
+    const sevimlilar = JSON.parse(localStorage.getItem('sevimlilar_' + joriy?.email) || '[]');
+    const sevimliMi = sevimlilar.some(s => s.id == elon.id);
+
+    // Media
+    let mainHTML = barcha_media.length > 0
+        ? isVideo(barcha_media[0])
+            ? `<video src="${barcha_media[0]}" style="width:100%;height:100%;object-fit:cover;" controls></video>`
+            : `<img src="${barcha_media[0]}" style="width:100%;height:100%;object-fit:cover;" />`
+        : `<span style="font-size:100px">${ikona}</span>`;
+
+    let thumbsHTML = barcha_media.length > 1
+        ? `<div class="gallery-thumbs">${barcha_media.map((r,i) =>
+            isVideo(r)
+                ? `<video src="${r}" class="thumb ${i===0?'active':''}" onclick="mediaTanla(${i})" style="width:100px;height:70px;object-fit:cover;border-radius:10px;cursor:pointer;border:2px solid ${i===0?'#1565c0':'transparent'};flex-shrink:0;"></video>`
+                : `<img src="${r}" class="thumb ${i===0?'active':''}" onclick="mediaTanla(${i})" />`
+          ).join('')}</div>`
+        : '';
+
+    const jihozlarHTML = elon.jihozlar?.length
+        ? `<div class="section-title">🛋️ Jihozlar</div><div class="tags">${elon.jihozlar.map(j=>`<span class="tag">${j}</span>`).join('')}</div>` : '';
+    const kommunalkaHTML = elon.kommunalka?.length
+        ? `<div class="section-title">💡 Kommunal xizmatlar</div><div class="tags">${elon.kommunalka.map(k=>`<span class="tag kommunalka">${k}</span>`).join('')}</div>` : '';
+    const qulayliklarHTML = elon.qulayliklar
+        ? `<div class="section-title">✍️ Qo'shimcha qulayliklar</div><div class="description" style="background:#fff;padding:16px;border-radius:12px;border:1px solid #f0f0f0;">${elon.qulayliklar}</div>` : '';
+
+    // Bog'lanish qismi
+    const boglanishHTML = joriy
+        ? `<input type="text" placeholder="Ismingiz" value="${joriy.ism || ''}" />
+           <input type="tel" placeholder="Telefon" value="${joriy.telefon || ''}" />
+           <textarea placeholder="Xabaringiz...">Salom! Bu e'lon haqida ma'lumot olmoqchiman.</textarea>
+           <button class="btn-contact">📩 Xabar yuborish</button>
+           <a href="tel:${elon.telefon || ''}" class="btn-call">📞 ${elon.telefon || 'Qo\'ng\'iroq qilish'}</a>`
+        : `<div class="login-talab">
+               <p>📞 Sotuvchi bilan bog'lanish uchun kiring!</p>
+               <a href="login.html" onclick="localStorage.setItem('qaytish_url', window.location.href)">🔐 Kirish yoki ro'yxatdan o'tish</a>
+           </div>`;
+
+    document.getElementById('content').innerHTML = `
+        <div class="gallery-main" style="background:${galleryRang}" onclick="lightboxOch(0)">
+            ${mainHTML}
+            <div class="gallery-badge ${badgeClass}">${badgeMatn}</div>
+            ${barcha_media.length > 0 ? `<div class="gallery-count">📷 ${barcha_media.length} ta</div>` : ''}
+            ${barcha_media.length > 0 ? `<button class="gallery-fullscreen" onclick="event.stopPropagation();lightboxOch(0)">⛶ Katta</button>` : ''}
+        </div>
+        ${thumbsHTML}
+
+        <div class="content">
+            <div class="left">
+                <h1>${elon.nomi}</h1>
+                <div class="location">📍 ${elon.shahar}</div>
+                <div class="price-box">
+                    <div class="price">${narxMatn}</div>
+                    <button class="sev-btn ${sevimliMi?'active':''}" onclick="sevimliToggle(${JSON.stringify(elon).replace(/"/g,'&quot;')})">
+                        ${sevimliMi ? '❤️' : '🤍'}
+                    </button>
+                </div>
+                <div class="features">
+                    <div class="feature"><div class="feature-icon">📐</div><div class="feature-value">${elon.maydon} m²</div><div class="feature-label">Maydon</div></div>
+                    <div class="feature"><div class="feature-icon">🛏</div><div class="feature-value">${elon.xona}</div><div class="feature-label">Xona</div></div>
+                    <div class="feature"><div class="feature-icon">🏙️</div><div class="feature-value">${elon.tur==='ijara'?'Ijara':'Sotish'}</div><div class="feature-label">Tur</div></div>
+                    <div class="feature"><div class="feature-icon">👁️</div><div class="feature-value">${elon.views||0}</div><div class="feature-label">Ko'rilgan</div></div>
+                </div>
+                <div class="section-title">📝 Tavsif</div>
+                <div class="description">${elon.tavsif}</div>
+                ${jihozlarHTML}
+                ${kommunalkaHTML}
+                ${qulayliklarHTML}
+            </div>
+            <div>
+                <div class="contact-card">
+                    <h3>Bog'lanish</h3>
+                    <div class="agent">
+                        <div class="agent-avatar">👤</div>
+                        <div>
+                            <div class="agent-name">${elon.ism || 'Mulk egasi'}</div>
+                            <div class="agent-phone">${joriy ? (elon.telefon||'') : '🔒 Kirish kerak'}</div>
+                        </div>
+                    </div>
+                    ${boglanishHTML}
+                </div>
+            </div>
+        </div>`;
+}
+
+// Sevimli
+function sevimliToggle(elon) {
+    const joriy = JSON.parse(localStorage.getItem('joriy_foydalanuvchi') || 'null');
+    if (!joriy) {
+        localStorage.setItem('qaytish_url', window.location.href);
+        window.location.href = 'login.html';
+        return;
+    }
+    const key = 'sevimlilar_' + joriy.email;
+    let sevimlilar = JSON.parse(localStorage.getItem(key) || '[]');
+    const bor = sevimlilar.some(s => s.id == elon.id);
+    if (bor) {
+        sevimlilar = sevimlilar.filter(s => s.id != elon.id);
+    } else {
+        sevimlilar.push(elon);
+    }
+    localStorage.setItem(key, JSON.stringify(sevimlilar));
+    elonniYukla();
+}
+
+// Media
+function mediaTanla(index) {
+    joriy_index = index;
+    const src = barcha_media[index];
+    const mainDiv = document.querySelector('.gallery-main');
+    const badge = mainDiv.querySelector('.gallery-badge').outerHTML;
+    const count = mainDiv.querySelector('.gallery-count')?.outerHTML || '';
+    const btn   = mainDiv.querySelector('.gallery-fullscreen')?.outerHTML || '';
+    const mediaHTML = isVideo(src)
+        ? `<video src="${src}" style="width:100%;height:100%;object-fit:cover;" controls></video>`
+        : `<img src="${src}" style="width:100%;height:100%;object-fit:cover;" />`;
+    mainDiv.innerHTML = mediaHTML + badge + count + btn;
+    document.querySelectorAll('.thumb').forEach((t,i) => {
+        t.classList.toggle('active', i===index);
+        t.style.border = i===index ? '2px solid #1565c0' : '2px solid transparent';
+    });
+}
+
+function lightboxOch(index) {
+    if (!barcha_media.length) return;
+    joriy_index = index;
+    lightboxKorsat();
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function lightboxYop(e) {
+    if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lightbox-close')) return;
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function lightboxKorsat() {
+    const src = barcha_media[joriy_index];
+    const content = document.getElementById('lightbox-content');
+    const mediaHTML = isVideo(src)
+        ? `<video src="${src}" style="max-width:100%;max-height:85vh;border-radius:12px;" controls autoplay></video>`
+        : `<img src="${src}" style="max-width:100%;max-height:85vh;object-fit:contain;border-radius:12px;" />`;
+    content.innerHTML = `<button class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open');document.body.style.overflow=''">✕</button>${mediaHTML}`;
+    document.getElementById('lightbox-counter').textContent = `${joriy_index+1} / ${barcha_media.length}`;
+}
+
+function lightboxOldingi(e) { e.stopPropagation(); joriy_index=(joriy_index-1+barcha_media.length)%barcha_media.length; lightboxKorsat(); }
+function lightboxKeyingi(e) { e.stopPropagation(); joriy_index=(joriy_index+1)%barcha_media.length; lightboxKorsat(); }
+
+document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key==='ArrowLeft') lightboxOldingi(e);
+    if (e.key==='ArrowRight') lightboxKeyingi(e);
+    if (e.key==='Escape') { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow=''; }
+});
+
+elonniYukla();
+</script>
+</body>
+</html>

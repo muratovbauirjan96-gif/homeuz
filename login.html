@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirish — HomeUZ</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1565c0, #1a237e); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .nav { background: #fff; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.07); position: fixed; top: 0; width: 100%; z-index: 100; }
+        .logo { font-size: 22px; font-weight: 800; color: #1565c0; text-decoration: none; }
+        .logo span { color: #f57c00; }
+        .theme-btn { background: none; border: 1.5px solid #e0e0e0; border-radius: 20px; padding: 6px 16px; font-size: 14px; cursor: pointer; }
+
+        .container { background: #fff; border-radius: 24px; padding: 48px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); margin-top: 80px; }
+        .tabs { display: flex; gap: 0; margin-bottom: 32px; background: #f0f4ff; border-radius: 12px; padding: 4px; }
+        .tab { flex: 1; padding: 10px; text-align: center; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; color: #888; border: none; background: transparent; transition: all .2s; }
+        .tab.active { background: #fff; color: #1565c0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+        .form { display: none; }
+        .form.active { display: block; }
+        h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+        p.sub { font-size: 14px; color: #888; margin-bottom: 24px; }
+        label { font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px; margin-top: 16px; }
+        input { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px 14px; font-size: 14px; outline: none; transition: border .2s; }
+        input:focus { border-color: #1565c0; }
+        .btn { width: 100%; background: #1565c0; color: #fff; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 24px; }
+        .btn:hover { background: #0d47a1; }
+        .message { padding: 12px 16px; border-radius: 10px; font-size: 14px; margin-top: 16px; display: none; }
+        .message.success { background: #e8f5e9; color: #2e7d32; display: block; }
+        .message.error { background: #fce4ec; color: #c62828; display: block; }
+        .qaytish-xabar { background: #fff3e0; color: #e65100; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; text-align: center; display: none; }
+        .qaytish-xabar.show { display: block; }
+
+        body.dark { background: linear-gradient(135deg, #0d0d1a, #1a1a2e); }
+        body.dark .nav { background: #1a1a2e; }
+        body.dark .container { background: #1a1a2e; }
+        body.dark .tabs { background: #252540; }
+        body.dark .tab.active { background: #1a1a2e; }
+        body.dark input { background: #252540; border-color: #333; color: #e0e0e0; }
+        body.dark h2 { color: #e0e0e0; }
+
+        @media (max-width: 768px) {
+            .nav { padding: 12px 16px; }
+            .container { padding: 24px; margin-top: 70px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav">
+    <a href="index.html" class="logo">Home<span>UZ</span></a>
+    <button onclick="toggleDark()" id="theme-btn" class="theme-btn">🌙 Tun</button>
+</nav>
+
+<div class="container">
+    <div class="qaytish-xabar" id="qaytish-xabar">
+        🔐 Bu amalni bajarish uchun avval kiring!
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('kirish', this)">Kirish</button>
+        <button class="tab" onclick="showTab('royxat', this)">Ro'yxatdan o'tish</button>
+    </div>
+
+    <div class="form active" id="kirish">
+        <h2>Xush kelibsiz! 👋</h2>
+        <p class="sub">Hisobingizga kiring</p>
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="email@gmail.com" />
+        <label>Parol</label>
+        <input type="password" id="login-parol" placeholder="Parolingiz" />
+        <button class="btn" onclick="kirishQil()">Kirish →</button>
+        <div id="kirish-message" class="message"></div>
+    </div>
+
+    <div class="form" id="royxat">
+        <h2>Hisob yarating 🏠</h2>
+        <p class="sub">Bepul ro'yxatdan o'ting</p>
+        <label>Ismingiz</label>
+        <input type="text" id="reg-ism" placeholder="Ism Familiya" />
+        <label>Telefon</label>
+        <input type="tel" id="reg-telefon" placeholder="+998 90 123 45 67" />
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="email@gmail.com" />
+        <label>Parol</label>
+        <input type="password" id="reg-parol" placeholder="Kamida 6 ta belgi" />
+        <label>Parolni tasdiqlang</label>
+        <input type="password" id="reg-parol2" placeholder="Parolni qayta yozing" />
+        <button class="btn" onclick="royxatdan()">Ro'yxatdan o'tish →</button>
+        <div id="royxat-message" class="message"></div>
+    </div>
+</div>
+
+<script>
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+    document.getElementById('theme-btn').textContent = '☀️ Kun';
+}
+function toggleDark() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.getElementById('theme-btn').textContent = isDark ? '☀️ Kun' : '🌙 Tun';
+}
+
+if (localStorage.getItem('qaytish_url')) {
+    document.getElementById('qaytish-xabar').classList.add('show');
+}
+
+function showTab(tab, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    el.classList.add('active');
+}
+
+function kirishQil() {
+    const email = document.getElementById('login-email').value;
+    const parol = document.getElementById('login-parol').value;
+    const msg = document.getElementById('kirish-message');
+    if (!email || !parol) { msg.className='message error'; msg.textContent='❌ Email va parolni kiriting!'; return; }
+    const foydalanuvchilar = JSON.parse(localStorage.getItem('foydalanuvchilar') || '[]');
+    const topildi = foydalanuvchilar.find(f => f.email===email && f.parol===parol);
+    if (topildi) {
+        localStorage.setItem('joriy_foydalanuvchi', JSON.stringify(topildi));
+        msg.className='message success';
+        msg.textContent='✅ Muvaffaqiyatli kirdingiz!';
+        const qaytish = localStorage.getItem('qaytish_url') || 'index.html';
+        localStorage.removeItem('qaytish_url');
+        setTimeout(() => window.location.href = qaytish, 1500);
+    } else {
+        msg.className='message error';
+        msg.textContent='❌ Email yoki parol noto\'g\'ri!';
+    }
+}
+
+function royxatdan() {
+    const ism    = document.getElementById('reg-ism').value;
+    const tel    = document.getElementById('reg-telefon').value;
+    const email  = document.getElementById('reg-email').value;
+    const parol  = document.getElementById('reg-parol').value;
+    const parol2 = document.getElementById('reg-parol2').value;
+    const msg    = document.getElementById('royxat-message');
+    if (!ism||!email||!parol||!parol2||!tel) { msg.className='message error'; msg.textContent='❌ Barcha maydonlarni to\'ldiring!'; return; }
+    if (parol!==parol2) { msg.className='message error'; msg.textContent='❌ Parollar mos kelmaydi!'; return; }
+    if (parol.length<6) { msg.className='message error'; msg.textContent='❌ Parol kamida 6 ta belgi!'; return; }
+    const foydalanuvchilar = JSON.parse(localStorage.getItem('foydalanuvchilar') || '[]');
+    if (foydalanuvchilar.find(f => f.email===email)) { msg.className='message error'; msg.textContent='❌ Bu email allaqachon ro\'yxatdan o\'tgan!'; return; }
+    const yangi = { ism, telefon: tel, email, parol };
+    foydalanuvchilar.push(yangi);
+    localStorage.setItem('foydalanuvchilar', JSON.stringify(foydalanuvchilar));
+    localStorage.setItem('joriy_foydalanuvchi', JSON.stringify(yangi));
+    msg.className='message success';
+    msg.textContent='✅ Muvaffaqiyatli ro\'yxatdan o\'tdingiz!';
+    const qaytish = localStorage.getItem('qaytish_url') || 'index.html';
+    localStorage.removeItem('qaytish_url');
+    setTimeout(() => window.location.href = qaytish, 1500);
+}
+</script>
+</body>
+</html>
