@@ -2,15 +2,20 @@ const express = require('express');
 const path    = require('path');
 const fs      = require('fs');
 const multer  = require('multer');
+const { createClient } = require('@supabase/supabase-js');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// Uploads papkasi
+// Supabase
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://imfkvkhwgdpxhdeishtb.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_secret_ge8L8nWDgtITbBhtk6Oy4w_h4P7b7aq';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Uploads
 const uploadsDir = './uploads';
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
-// Multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadsDir),
     filename:    (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
@@ -25,67 +30,127 @@ app.use(express.static(path.join(__dirname)));
 app.use('/uploads', express.static(uploadsDir));
 app.use(express.json());
 
-// Data fayl
-const DATA_FILE = './data.json';
-if (!fs.existsSync(DATA_FILE)) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify({
-        elonlar: [
-            { id: 1, nomi: "3 xonali kvartira", narxi: 85000, narxTuri: "umumiy", tur: "sotib", xona: 3, maydon: 85, shahar: "Chilonzor, Toshkent", manzil: "Mustaqillik ko'chasi", tavsif: "Yaxshi ta'mirlangan kvartira", ism: "Akbar Toshmatov", telefon: "+998 90 123 45 67", rasmlar: [], jihozlar: ["Muzlatgich","Konditsioner","Televizor"], kommunalka: ["Gaz","Suv","Elektr","Internet"], sana: "2026-06-10T10:00:00.000Z", views: 0 },
-            { id: 2, nomi: "2 xonali kvartira", narxi: 400, narxTuri: "oylik", tur: "ijara", xona: 2, maydon: 62, shahar: "Yunusobod, Toshkent", manzil: "Amir Temur ko'chasi", tavsif: "Qulay joylashgan", ism: "Sardor Rahimov", telefon: "+998 91 234 56 78", rasmlar: [], jihozlar: ["Kravat","Divan","Kir yuvish mashinasi"], kommunalka: ["Suv","Elektr","Internet","Lift"], sana: "2026-06-12T14:00:00.000Z", views: 0 },
-            { id: 3, nomi: "4 xonali uy", narxi: 150000, narxTuri: "umumiy", tur: "sotib", xona: 4, maydon: 140, shahar: "Mirzo Ulugbek, Toshkent", manzil: "Universitet ko'chasi", tavsif: "Zamonaviy uy", ism: "Jasur Karimov", telefon: "+998 93 345 67 89", rasmlar: [], jihozlar: ["Divan","Kravat","Muzlatgich","Konditsioner","Televizor","Plita"], kommunalka: ["Gaz","Suv","Elektr","Internet","Hovli","Avtoturargoh"], sana: "2026-06-14T09:00:00.000Z", views: 0 }
-        ]
-    }, null, 2));
-}
-
-function malumotlarniOl() { return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8')); }
-function malumotlarniSaqla(d) { fs.writeFileSync(DATA_FILE, JSON.stringify(d, null, 2)); }
-
-// API
-app.get('/api/elonlar', (req, res) => {
-    res.json(malumotlarniOl().elonlar);
+// API - barcha e'lonlar
+app.get('/api/elonlar', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('elonlar')
+            .select('*')
+            .order('sana', { ascending: false });
+        if (error) throw error;
+        res.json(data);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ xato: "Server xatosi" });
+    }
 });
 
-app.post('/api/elonlar', (req, res) => {
-    const data  = malumotlarniOl();
-    const yangi = { id: Date.now(), rasmlar: [], jihozlar: [], kommunalka: [], sana: new Date().toISOString(), views: 0, ...req.body };
-    data.elonlar.push(yangi);
-    malumotlarniSaqla(data);
-    res.json(yangi);
+// API - yangi e'lon
+app.post('/api/elonlar', async (req, res) => {
+    try {
+        const yangi = {
+            id: Date.now(),
+            rasmlar: [],
+            jihozlar: [],
+            kommunalka: [],
+            sana: new Date().toISOString(),
+            views: 0,
+            ...req.body
+        };
+        const { data, error } = await supabase
+            .from('elonlar')
+            .insert([yangi])
+            .select();
+        if (error) throw error;
+        res.json(data[0]);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ xato: "Server xatosi" });
+    }
 });
 
-app.get('/api/elonlar/:id', (req, res) => {
-    const data = malumotlarniOl();
-    const elon = data.elonlar.find(e => e.id === parseInt(req.params.id));
-    if (!elon) return res.status(404).json({ xato: "E'lon topilmadi" });
-    elon.views = (elon.views || 0) + 1;
-    malumotlarniSaqla(data);
-    res.json(elon);
+// API - bitta e'lon (views++)
+app.get('/api/elonlar/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const { data, error } = await supabase
+            .from('elonlar')
+            .select('*')
+            .eq('id', id)
+            .single();
+        if (error) throw error;
+        if (!data) return res.status(404).json({ xato: "E'lon topilmadi" });
+
+        // Views++
+        await supabase
+            .from('elonlar')
+            .update({ views: (data.views || 0) + 1 })
+            .eq('id', id);
+
+        res.json({ ...data, views: (data.views || 0) + 1 });
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ xato: "Server xatosi" });
+    }
 });
 
-app.put('/api/elonlar/:id', (req, res) => {
-    const data  = malumotlarniOl();
-    const index = data.elonlar.findIndex(e => e.id === parseInt(req.params.id));
-    if (index === -1) return res.status(404).json({ xato: "E'lon topilmadi" });
-    data.elonlar[index] = { ...data.elonlar[index], ...req.body };
-    malumotlarniSaqla(data);
-    res.json(data.elonlar[index]);
+// API - e'lonni tahrirlash
+app.put('/api/elonlar/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const { data, error } = await supabase
+            .from('elonlar')
+            .update(req.body)
+            .eq('id', id)
+            .select();
+        if (error) throw error;
+        res.json(data[0]);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ xato: "Server xatosi" });
+    }
 });
 
-app.delete('/api/elonlar/:id', (req, res) => {
-    const data = malumotlarniOl();
-    data.elonlar = data.elonlar.filter(e => e.id !== parseInt(req.params.id));
-    malumotlarniSaqla(data);
-    res.json({ xabar: "O'chirildi" });
+// API - e'lonni o'chirish
+app.delete('/api/elonlar/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const { error } = await supabase
+            .from('elonlar')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+        res.json({ xabar: "O'chirildi" });
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ xato: "Server xatosi" });
+    }
 });
 
-app.post('/api/rasm/:id', upload.array('rasmlar', 15), (req, res) => {
-    const data = malumotlarniOl();
-    const elon = data.elonlar.find(e => e.id === parseInt(req.params.id));
-    if (!elon) return res.status(404).json({ xato: "E'lon topilmadi" });
-    if (!elon.rasmlar) elon.rasmlar = [];
-    req.files.forEach(f => elon.rasmlar.push(`/uploads/${f.filename}`));
-    malumotlarniSaqla(data);
-    res.json({ rasmlar: elon.rasmlar });
+// API - rasm yuklash
+app.post('/api/rasm/:id', upload.array('rasmlar', 15), async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const { data: elon } = await supabase
+            .from('elonlar')
+            .select('rasmlar')
+            .eq('id', id)
+            .single();
+
+        const rasmlar = elon?.rasmlar || [];
+        req.files.forEach(f => rasmlar.push(`/uploads/${f.filename}`));
+
+        const { error } = await supabase
+            .from('elonlar')
+            .update({ rasmlar })
+            .eq('id', id);
+        if (error) throw error;
+
+        res.json({ rasmlar });
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ xato: "Server xatosi" });
+    }
 });
 
 app.listen(PORT, () => {
