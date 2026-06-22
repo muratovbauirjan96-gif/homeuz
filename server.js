@@ -8,8 +8,8 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // Supabase
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://imfkvkhwgdpxhdeishtb.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_-mCnI51rxeDY-ktcYjB0Bg_yEc9XdKL';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Uploads
