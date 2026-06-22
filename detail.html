@@ -137,7 +137,7 @@
 </nav>
 <button class="close-btn" onclick="burgerYop()" id="close-btn">✕</button>
 
-<a href="listings.html" class="back-btn">← E'lonlarga qaytish</a>
+<a href="javascript:history.back()" class="back-btn">← Ortga qaytish</a>
 
 <div class="container" id="content">
     <div class="loading">⏳ Ma'lumot yuklanmoqda...</div>
@@ -206,9 +206,12 @@ async function elonniYukla() {
 function elonniKorsat(elon) {
     barcha_media = elon.rasmlar || [];
     const joriy = JSON.parse(localStorage.getItem('joriy_foydalanuvchi') || 'null');
-    const narxMatn = elon.tur === 'ijara'
-        ? `$${elon.narxi?.toLocaleString()} <small>/ oy</small>`
-        : `$${elon.narxi?.toLocaleString()} <small>yoki muzokarali</small>`;
+    let narxQoshimcha = '';
+    if (elon.narxTuri === 'oylik') narxQoshimcha = '/ oy';
+    else if (elon.narxTuri === 'kunlik') narxQoshimcha = '/ kun';
+    else if (elon.tur === 'ijara') narxQoshimcha = '/ oy';
+    else narxQoshimcha = 'yoki muzokarali';
+    const narxMatn = `$${elon.narxi?.toLocaleString()} <small>${narxQoshimcha}</small>`;
     const ikona = elon.tur === 'ijara' ? '🔑' : '🏠';
     const badgeClass = elon.tur === 'ijara' ? 'badge-ijara' : 'badge-sotib';
     const badgeMatn = elon.tur === 'ijara' ? 'Ijara' : 'Sotish';
@@ -260,7 +263,7 @@ function elonniKorsat(elon) {
         <div class="content">
             <div class="left">
                 <h1>${elon.nomi}</h1>
-                <div class="location">📍 ${elon.shahar}</div>
+                <div class="location">📍 ${elon.shahar}${elon.manzil ? ', ' + elon.manzil : ''}</div>
                 <div class="price-box">
                     <div class="price">${narxMatn}</div>
                     <button class="sev-btn ${sevimliMi?'active':''}" onclick="sevimliToggle(${JSON.stringify(elon).replace(/"/g,'&quot;')})">

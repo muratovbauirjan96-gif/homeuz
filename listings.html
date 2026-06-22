@@ -50,7 +50,6 @@
         .empty-icon { font-size: 56px; margin-bottom: 16px; }
         .loading { text-align: center; padding: 60px; color: #888; grid-column: 1/-1; }
 
-        /* DARK */
         body.dark { background: #0f0f1a; color: #e0e0e0; }
         body.dark .nav { background: #1a1a2e; }
         body.dark .filter-bar { background: #1a1a2e; border-color: #333; }
@@ -59,7 +58,6 @@
         body.dark .card-title { color: #e0e0e0; }
         body.dark .burger span { background: #fff; }
 
-        /* MOBIL */
         @media (max-width: 768px) {
             .nav { padding: 12px 16px; }
             .nav-links { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; flex-direction: column; align-items: center; justify-content: center; gap: 24px; }
@@ -109,9 +107,16 @@
     </select>
     <select id="priceFilter" onchange="filterCards()">
         <option value="">Narx: Hammasi</option>
-        <option value="low">$0 — $50,000</option>
-        <option value="mid">$50,000 — $100,000</option>
-        <option value="high">$100,000+</option>
+        <optgroup label="🏠 Sotish">
+            <option value="s-low">$0 — $50,000</option>
+            <option value="s-mid">$50,000 — $150,000</option>
+            <option value="s-high">$150,000+</option>
+        </optgroup>
+        <optgroup label="🔑 Ijara (oylik)">
+            <option value="i-low">$0 — $300/oy</option>
+            <option value="i-mid">$300 — $700/oy</option>
+            <option value="i-high">$700+/oy</option>
+        </optgroup>
     </select>
     <button class="btn-search" onclick="filterCards()">Qidirish</button>
 </div>
@@ -182,8 +187,12 @@ async function elonlarniYukla() {
 function kartaChiz(elon, i) {
     const rang = ranglar[i % ranglar.length];
     const ikona = elon.tur === 'ijara' ? '🔑' : '🏠';
-    const narxMatn = elon.tur === 'ijara' ? `$${elon.narxi?.toLocaleString()}/oy` : `$${elon.narxi?.toLocaleString()}`;
-    const imgHTML = elon.rasmlar?.length ? `<img src="${elon.rasmlar[0]}" style="width:100%;height:100%;object-fit:cover;"/>` : `<span>${ikona}</span>`;
+    const narxMatn = elon.tur === 'ijara'
+        ? `$${elon.narxi?.toLocaleString()}/oy`
+        : `$${elon.narxi?.toLocaleString()}`;
+    const imgHTML = elon.rasmlar?.length
+        ? `<img src="${elon.rasmlar[0]}" style="width:100%;height:100%;object-fit:cover;"/>`
+        : `<span>${ikona}</span>`;
     return `<div class="card" onclick="window.location='detail.html?id=${elon.id}'">
         <div class="card-img ${rang}">${imgHTML}<span class="badge ${elon.tur}">${elon.tur==='ijara'?'Ijara':'Sotish'}</span></div>
         <div class="card-body">
@@ -201,6 +210,7 @@ function filterCards() {
     const type   = document.getElementById('typeFilter').value;
     const rooms  = document.getElementById('roomFilter').value;
     const price  = document.getElementById('priceFilter').value;
+
     let filtered = barcha_elonlar.filter(e => {
         if (search && !e.shahar?.toLowerCase().includes(search) && !e.nomi?.toLowerCase().includes(search)) return false;
         if (type && e.tur !== type) return false;
@@ -208,14 +218,27 @@ function filterCards() {
         if (rooms === '2' && e.xona !== 2) return false;
         if (rooms === '3' && e.xona !== 3) return false;
         if (rooms === '4' && e.xona < 4) return false;
-        if (price === 'low' && e.narxi > 50000) return false;
-        if (price === 'mid' && (e.narxi < 50000 || e.narxi > 100000)) return false;
-        if (price === 'high' && e.narxi < 100000) return false;
+
+        // Narx filtri
+        if (price === 's-low'  && (e.tur !== 'sotib' || e.narxi > 50000)) return false;
+        if (price === 's-mid'  && (e.tur !== 'sotib' || e.narxi < 50000 || e.narxi > 150000)) return false;
+        if (price === 's-high' && (e.tur !== 'sotib' || e.narxi < 150000)) return false;
+        if (price === 'i-low'  && (e.tur !== 'ijara' || e.narxi > 300)) return false;
+        if (price === 'i-mid'  && (e.tur !== 'ijara' || e.narxi < 300 || e.narxi > 700)) return false;
+        if (price === 'i-high' && (e.tur !== 'ijara' || e.narxi < 700)) return false;
+
         return true;
     });
+
     document.getElementById('count').textContent = filtered.length;
+
     if (!filtered.length) {
-        document.getElementById('cardGrid').innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><h3>E\'lon topilmadi</h3><p>Boshqa filtr sinab ko\'ring</p></div>';
+        document.getElementById('cardGrid').innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">🔍</div>
+                <h3>E'lon topilmadi</h3>
+                <p>Boshqa filtr sinab ko'ring</p>
+            </div>`;
         return;
     }
     document.getElementById('cardGrid').innerHTML = filtered.map((e,i) => kartaChiz(e,i)).join('');

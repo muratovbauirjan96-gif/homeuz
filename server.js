@@ -54,7 +54,7 @@ app.get('/api/elonlar', (req, res) => {
 // API - yangi e'lon
 app.post('/api/elonlar', (req, res) => {
     const data  = malumotlarniOl();
-    const yangi = { id: Date.now(), rasmlar: [], jihozlar: [], kommunalka: [], sana: new Date().toISOString(), ...req.body };
+    const yangi = { id: Date.now(), rasmlar: [], jihozlar: [], kommunalka: [], sana: new Date().toISOString(), views: 0, ...req.body };
     data.elonlar.push(yangi);
     malumotlarniSaqla(data);
     res.json(yangi);

@@ -139,6 +139,7 @@
             <h2 id="profil-ism">Yuklanmoqda...</h2>
             <p id="profil-email"></p>
             <p id="profil-telefon" style="color:#1565c0;font-weight:600;margin-top:4px;"></p>
+            <button onclick="profilTahrir()" style="margin-top:12px;background:#f0f4ff;color:#1565c0;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">✏️ Profilni tahrirlash</button>
         </div>
         <div class="profil-stats">
             <div class="pstat"><strong id="stat-elon">0</strong><span>E'lonlar</span></div>
@@ -178,6 +179,21 @@
         <div style="background:#fff;border-radius:20px;padding:32px;box-shadow:0 2px 16px rgba(0,0,0,0.07);">
             <h3 style="font-size:18px;font-weight:800;margin-bottom:20px;">📊 Faoliyat tarixi</h3>
             <div id="faoliyat-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- PROFIL TAHRIRLASH MODAL -->
+<div class="modal-bg" id="profil-modal">
+    <div class="modal">
+        <h3>✏️ Profilni tahrirlash</h3>
+        <label>Ismingiz</label>
+        <input type="text" id="profil-edit-ism" />
+        <label>Telefon</label>
+        <input type="tel" id="profil-edit-telefon" />
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="document.getElementById('profil-modal').classList.remove('open')">Bekor</button>
+            <button class="btn-save" onclick="profilniSaqla()">💾 Saqlash</button>
         </div>
     </div>
 </div>
@@ -340,6 +356,29 @@ async function elonniSaqla() {
 }
 
 function modalYop() { document.getElementById('edit-modal').classList.remove('open'); }
+
+function profilTahrir() {
+    document.getElementById('profil-edit-ism').value = joriy?.ism || '';
+    document.getElementById('profil-edit-telefon').value = joriy?.telefon || '';
+    document.getElementById('profil-modal').classList.add('open');
+}
+
+function profilniSaqla() {
+    const yangiIsm = document.getElementById('profil-edit-ism').value;
+    const yangiTel = document.getElementById('profil-edit-telefon').value;
+    if (!yangiIsm || !yangiTel) { alert('❌ Barcha maydonlarni to\'ldiring!'); return; }
+    const yangilangan = { ...joriy, ism: yangiIsm, telefon: yangiTel };
+    localStorage.setItem('joriy_foydalanuvchi', JSON.stringify(yangilangan));
+    const foydalanuvchilar = JSON.parse(localStorage.getItem('foydalanuvchilar') || '[]');
+    const idx = foydalanuvchilar.findIndex(f => f.email === joriy.email);
+    if (idx !== -1) { foydalanuvchilar[idx] = { ...foydalanuvchilar[idx], ism: yangiIsm, telefon: yangiTel }; }
+    localStorage.setItem('foydalanuvchilar', JSON.stringify(foydalanuvchilar));
+    document.getElementById('profil-modal').classList.remove('open');
+    document.getElementById('profil-ism').textContent = yangiIsm;
+    document.getElementById('profil-telefon').textContent = yangiTel;
+    document.getElementById('avatar').textContent = yangiIsm.charAt(0).toUpperCase();
+    alert('✅ Profil yangilandi!');
+}
 
 function sevimlilarniKorsat() {
     const sevimlilar = JSON.parse(localStorage.getItem('sevimlilar_' + joriy?.email) || '[]');
