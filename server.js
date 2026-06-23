@@ -137,6 +137,56 @@ app.post('/api/rasm/:id', upload.array('rasmlar', 15), async (req, res) => {
     }
 });
 
+// API - ro'yxatdan o'tish
+app.post('/api/royxat', async (req, res) => {
+    try {
+        const { ism, telefon, email, parol } = req.body;
+        if (!ism || !email || !parol) return res.status(400).json({ xato: "Barcha maydonlarni to'ldiring!" });
+
+        // Email mavjudmi tekshirish
+        const { data: mavjud } = await supabase
+            .from('foydalanuvchilar')
+            .select('id')
+            .eq('email', email)
+            .single();
+
+        if (mavjud) return res.status(400).json({ xato: "Bu email allaqachon ro'yxatdan o'tgan!" });
+
+        const { data, error } = await supabase
+            .from('foydalanuvchilar')
+            .insert([{ ism, telefon, email, parol }])
+            .select();
+
+        if (error) throw error;
+        res.json({ muvaffaqiyat: true, foydalanuvchi: { id: data[0].id, ism, email, telefon } });
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ xato: "Server xatosi" });
+    }
+});
+
+// API - kirish
+app.post('/api/kirish', async (req, res) => {
+    try {
+        const { email, parol } = req.body;
+        if (!email || !parol) return res.status(400).json({ xato: "Email va parolni kiriting!" });
+
+        const { data, error } = await supabase
+            .from('foydalanuvchilar')
+            .select('*')
+            .eq('email', email)
+            .eq('parol', parol)
+            .single();
+
+        if (error || !data) return res.status(401).json({ xato: "Email yoki parol noto'g'ri!" });
+
+        res.json({ muvaffaqiyat: true, foydalanuvchi: { id: data.id, ism: data.ism, email: data.email, telefon: data.telefon } });
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ xato: "Server xatosi" });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`✅ HomeUZ server ishga tushdi!`);
     console.log(`🌐 http://localhost:${PORT}`);

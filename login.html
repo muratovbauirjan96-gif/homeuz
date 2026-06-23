@@ -25,6 +25,11 @@
         label { font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px; margin-top: 16px; }
         input { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px 14px; font-size: 14px; outline: none; transition: border .2s; }
         input:focus { border-color: #1565c0; }
+
+        .parol-wrap { position: relative; }
+        .parol-wrap input { padding-right: 44px; }
+        .parol-ko { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; }
+
         .btn { width: 100%; background: #1565c0; color: #fff; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 24px; }
         .btn:hover { background: #0d47a1; }
         .message { padding: 12px 16px; border-radius: 10px; font-size: 14px; margin-top: 16px; display: none; }
@@ -37,9 +42,10 @@
         body.dark .nav { background: #1a1a2e; }
         body.dark .container { background: #1a1a2e; }
         body.dark .tabs { background: #252540; }
-        body.dark .tab.active { background: #1a1a2e; }
+        body.dark .tab.active { background: #1a1a2e; color: #4fc3f7; }
         body.dark input { background: #252540; border-color: #333; color: #e0e0e0; }
         body.dark h2 { color: #e0e0e0; }
+        body.dark label { color: #aaa; }
 
         @media (max-width: 768px) {
             .nav { padding: 12px 16px; }
@@ -64,20 +70,22 @@
         <button class="tab" onclick="showTab('royxat', this)">Ro'yxatdan o'tish</button>
     </div>
 
+    <!-- KIRISH -->
     <div class="form active" id="kirish">
         <h2>Xush kelibsiz! 👋</h2>
         <p class="sub">Hisobingizga kiring</p>
         <label>Email</label>
         <input type="email" id="login-email" placeholder="email@gmail.com" />
         <label>Parol</label>
-        <div style="position:relative;">
-    <input type="password" id="login-parol" placeholder="Parolingiz" style="padding-right:44px;" />
-    <button onclick="korinishToggle('login-parol', this)" type="button" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;">👁️</button>
-</div>
+        <div class="parol-wrap">
+            <input type="password" id="login-parol" placeholder="Parolingiz" />
+            <button class="parol-ko" onclick="parolKorsat('login-parol', this)" type="button">👁️</button>
+        </div>
         <button class="btn" onclick="kirishQil()">Kirish →</button>
         <div id="kirish-message" class="message"></div>
     </div>
 
+    <!-- RO'YXATDAN O'TISH -->
     <div class="form" id="royxat">
         <h2>Hisob yarating 🏠</h2>
         <p class="sub">Bepul ro'yxatdan o'ting</p>
@@ -88,15 +96,15 @@
         <label>Email</label>
         <input type="email" id="reg-email" placeholder="email@gmail.com" />
         <label>Parol</label>
-        <div style="position:relative;">
-    <input type="password" id="reg-parol" placeholder="Kamida 6 ta belgi" style="padding-right:44px;" />
-    <button onclick="korinishToggle('reg-parol', this)" type="button" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;">👁️</button>
-</div>
+        <div class="parol-wrap">
+            <input type="password" id="reg-parol" placeholder="Kamida 6 ta belgi" />
+            <button class="parol-ko" onclick="parolKorsat('reg-parol', this)" type="button">👁️</button>
+        </div>
         <label>Parolni tasdiqlang</label>
-        <div style="position:relative;">
-    <input type="password" id="reg-parol2" placeholder="Parolni qayta yozing" style="padding-right:44px;" />
-    <button onclick="korinishToggle('reg-parol2', this)" type="button" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;">👁️</button>
-</div>
+        <div class="parol-wrap">
+            <input type="password" id="reg-parol2" placeholder="Parolni qayta yozing" />
+            <button class="parol-ko" onclick="parolKorsat('reg-parol2', this)" type="button">👁️</button>
+        </div>
         <button class="btn" onclick="royxatdan()">Ro'yxatdan o'tish →</button>
         <div id="royxat-message" class="message"></div>
     </div>
@@ -114,17 +122,6 @@ function toggleDark() {
     document.getElementById('theme-btn').textContent = isDark ? '☀️ Kun' : '🌙 Tun';
 }
 
-function korinishToggle(inputId, btn) {
-    const input = document.getElementById(inputId);
-    if (input.type === 'password') {
-        input.type = 'text';
-        btn.textContent = '🙈';
-    } else {
-        input.type = 'password';
-        btn.textContent = '👁️';
-    }
-}
-
 if (localStorage.getItem('qaytish_url')) {
     document.getElementById('qaytish-xabar').classList.add('show');
 }
@@ -136,47 +133,112 @@ function showTab(tab, el) {
     el.classList.add('active');
 }
 
-function kirishQil() {
-    const email = document.getElementById('login-email').value;
-    const parol = document.getElementById('login-parol').value;
-    const msg = document.getElementById('kirish-message');
-    if (!email || !parol) { msg.className='message error'; msg.textContent='❌ Email va parolni kiriting!'; return; }
-    const foydalanuvchilar = JSON.parse(localStorage.getItem('foydalanuvchilar') || '[]');
-    const topildi = foydalanuvchilar.find(f => f.email===email && f.parol===parol);
-    if (topildi) {
-        localStorage.setItem('joriy_foydalanuvchi', JSON.stringify(topildi));
-        msg.className='message success';
-        msg.textContent='✅ Muvaffaqiyatli kirdingiz!';
-        const qaytish = localStorage.getItem('qaytish_url') || 'index.html';
-        localStorage.removeItem('qaytish_url');
-        setTimeout(() => window.location.href = qaytish, 1500);
+function parolKorsat(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
     } else {
-        msg.className='message error';
-        msg.textContent='❌ Email yoki parol noto\'g\'ri!';
+        input.type = 'password';
+        btn.textContent = '👁️';
     }
 }
 
-function royxatdan() {
+async function kirishQil() {
+    const email = document.getElementById('login-email').value;
+    const parol = document.getElementById('login-parol').value;
+    const msg   = document.getElementById('kirish-message');
+
+    if (!email || !parol) {
+        msg.className = 'message error';
+        msg.textContent = '❌ Email va parolni kiriting!';
+        return;
+    }
+
+    msg.className = 'message';
+    msg.style.display = 'block';
+    msg.textContent = '⏳ Tekshirilmoqda...';
+    msg.style.background = '#f0f4ff';
+    msg.style.color = '#1565c0';
+
+    try {
+        const res = await fetch('/api/kirish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, parol })
+        });
+        const data = await res.json();
+
+        if (data.muvaffaqiyat) {
+            localStorage.setItem('joriy_foydalanuvchi', JSON.stringify(data.foydalanuvchi));
+            msg.className = 'message success';
+            msg.textContent = '✅ Muvaffaqiyatli kirdingiz!';
+            const qaytish = localStorage.getItem('qaytish_url') || 'index.html';
+            localStorage.removeItem('qaytish_url');
+            setTimeout(() => window.location.href = qaytish, 1500);
+        } else {
+            msg.className = 'message error';
+            msg.textContent = '❌ ' + data.xato;
+        }
+    } catch(err) {
+        msg.className = 'message error';
+        msg.textContent = '❌ Server bilan bog\'lanib bo\'lmadi!';
+    }
+}
+
+async function royxatdan() {
     const ism    = document.getElementById('reg-ism').value;
     const tel    = document.getElementById('reg-telefon').value;
     const email  = document.getElementById('reg-email').value;
     const parol  = document.getElementById('reg-parol').value;
     const parol2 = document.getElementById('reg-parol2').value;
     const msg    = document.getElementById('royxat-message');
-    if (!ism||!email||!parol||!parol2||!tel) { msg.className='message error'; msg.textContent='❌ Barcha maydonlarni to\'ldiring!'; return; }
-    if (parol!==parol2) { msg.className='message error'; msg.textContent='❌ Parollar mos kelmaydi!'; return; }
-    if (parol.length<6) { msg.className='message error'; msg.textContent='❌ Parol kamida 6 ta belgi!'; return; }
-    const foydalanuvchilar = JSON.parse(localStorage.getItem('foydalanuvchilar') || '[]');
-    if (foydalanuvchilar.find(f => f.email===email)) { msg.className='message error'; msg.textContent='❌ Bu email allaqachon ro\'yxatdan o\'tgan!'; return; }
-    const yangi = { ism, telefon: tel, email, parol };
-    foydalanuvchilar.push(yangi);
-    localStorage.setItem('foydalanuvchilar', JSON.stringify(foydalanuvchilar));
-    localStorage.setItem('joriy_foydalanuvchi', JSON.stringify(yangi));
-    msg.className='message success';
-    msg.textContent='✅ Muvaffaqiyatli ro\'yxatdan o\'tdingiz!';
-    const qaytish = localStorage.getItem('qaytish_url') || 'index.html';
-    localStorage.removeItem('qaytish_url');
-    setTimeout(() => window.location.href = qaytish, 1500);
+
+    if (!ism || !email || !parol || !parol2 || !tel) {
+        msg.className = 'message error';
+        msg.textContent = '❌ Barcha maydonlarni to\'ldiring!';
+        return;
+    }
+    if (parol !== parol2) {
+        msg.className = 'message error';
+        msg.textContent = '❌ Parollar mos kelmaydi!';
+        return;
+    }
+    if (parol.length < 6) {
+        msg.className = 'message error';
+        msg.textContent = '❌ Parol kamida 6 ta belgi!';
+        return;
+    }
+
+    msg.className = 'message';
+    msg.style.display = 'block';
+    msg.textContent = '⏳ Ro\'yxatdan o\'tilmoqda...';
+    msg.style.background = '#f0f4ff';
+    msg.style.color = '#1565c0';
+
+    try {
+        const res = await fetch('/api/royxat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ism, telefon: tel, email, parol })
+        });
+        const data = await res.json();
+
+        if (data.muvaffaqiyat) {
+            localStorage.setItem('joriy_foydalanuvchi', JSON.stringify(data.foydalanuvchi));
+            msg.className = 'message success';
+            msg.textContent = '✅ Muvaffaqiyatli ro\'yxatdan o\'tdingiz!';
+            const qaytish = localStorage.getItem('qaytish_url') || 'index.html';
+            localStorage.removeItem('qaytish_url');
+            setTimeout(() => window.location.href = qaytish, 1500);
+        } else {
+            msg.className = 'message error';
+            msg.textContent = '❌ ' + data.xato;
+        }
+    } catch(err) {
+        msg.className = 'message error';
+        msg.textContent = '❌ Server bilan bog\'lanib bo\'lmadi!';
+    }
 }
 </script>
 </body>
