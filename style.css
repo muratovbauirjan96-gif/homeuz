@@ -121,3 +121,38 @@ button:focus, a:focus, input:focus, select:focus, textarea:focus {
 button:focus-visible {
     outline: 2px solid #1565c0 !important;
 }
+/* CHECKBOX STILLAR */
+.check-item input[type=checkbox] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    background: #fff;
+    transition: all .2s;
+}
+
+.check-item input[type=checkbox]:checked {
+    background: #1565c0;
+    border-color: #1565c0;
+}
+
+.check-item input[type=checkbox]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+body.dark .check-item input[type=checkbox] {
+    background: #252540;
+    border-color: #444;
+}
